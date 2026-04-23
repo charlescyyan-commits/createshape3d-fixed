@@ -4,6 +4,7 @@ import { Check, ShoppingCart, Plus, Minus, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/providers/trpc';
 import { useCart } from '@/contexts/CartContext';
+import DentalPrinter from './DentalPrinter';
 
 function parseJson<T>(str: string | null | undefined, fallback: T): T {
   try { return str ? JSON.parse(str) as T : fallback; } catch { return fallback; }
@@ -11,6 +12,12 @@ function parseJson<T>(str: string | null | undefined, fallback: T): T {
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
+  
+  // Special route for dental printer detail page
+  if (slug === 'dental-printer' || slug === 'dental-stellar-d100') {
+    return <DentalPrinter />;
+  }
+  
   const { data: product, isLoading } = trpc.product.bySlug.useQuery(slug || '');
   const { addItem } = useCart();
   const [activeImage, setActiveImage] = useState(0);

@@ -88,6 +88,7 @@ export default function Header() {
   const getSetting = (key: string) => settings?.find(s => s.key === key)?.value;
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 20);
@@ -95,23 +96,43 @@ export default function Header() {
     return () => window.removeEventListener('scroll', h);
   }, []);
 
+  // Clear any pending close timer
+  const cancelClose = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  // Delayed close - gives user time to move mouse into dropdown
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimerRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+      setActiveSubCategory(null);
+    }, 150);
+  }, [cancelClose]);
+
   const getSubSlugFromHref = (href: string) => {
+    if (href.startsWith('/dental-printer')) return 'dental-3d-printer';
     const match = href.match(/category=([^&]+)/);
     return match ? match[1] : '';
   };
 
   const handleNavEnter = useCallback((item: MenuItem) => {
+    cancelClose();
     if (item.children && item.products) {
       const firstChildSlug = getSubSlugFromHref(item.children[0].href);
       setActiveSubCategory(firstChildSlug);
     }
     setActiveDropdown(item.label);
-  }, []);
+  }, [cancelClose]);
 
   const handleSubEnter = useCallback((childHref: string) => {
+    cancelClose();
     const slug = getSubSlugFromHref(childHref);
     setActiveSubCategory(slug);
-  }, []);
+  }, [cancelClose]);
 
   const getFilteredProducts = (item: MenuItem) => {
     if (!item.products || !activeSubCategory) return item.products || [];
@@ -155,7 +176,7 @@ export default function Header() {
                 key={item.label}
                 className="relative"
                 onMouseEnter={() => handleNavEnter(item)}
-                onMouseLeave={() => setActiveDropdown(null)}
+                onMouseLeave={scheduleClose}
               >
                 {item.href ? (
                   <Link to={item.href} className="px-1.5 lg:px-3 py-2 text-[11px] lg:text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-0.5 lg:gap-1 whitespace-nowrap">
@@ -172,8 +193,8 @@ export default function Header() {
                   <div
                     ref={megaMenuRef}
                     className="fixed left-0 right-0 top-[calc(4rem+1px)] bg-white border-b border-neutral-200 shadow-xl z-50"
-                    onMouseEnter={() => setActiveDropdown(item.label)}
-                    onMouseLeave={() => { setActiveDropdown(null); setActiveSubCategory(null); }}
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={() => { scheduleClose(); }}
                   >
                     <div className="max-w-7xl mx-auto px-4 py-6">
                       <div className="flex gap-8">
