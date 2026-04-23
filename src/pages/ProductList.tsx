@@ -4,18 +4,70 @@ import { Loader2, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '@/contexts/CartContext';
 
+const fallbackProducts = [
+  { id: 1, slug: 'washable-resin-premium', name: 'Washable Resin Premium', badge: 'BESTSELLER', basePrice: '25.99', mainImage: '/products/resin-washable-1kg.jpg', category: { name: 'Resin' } },
+  { id: 2, slug: 'prolite-m4k', name: 'CS3D ProLite M4K', badge: 'POPULAR', basePrice: '299.99', mainImage: '/products/printer-main.jpg', category: { name: '3D Printer' } },
+  { id: 3, slug: 'dental-stellar-d100', name: 'Dental Stellar D100', badge: null, basePrice: '1299.99', mainImage: '/products/dental-printer.jpg', category: { name: '3D Printer' } },
+  { id: 4, slug: 'industrial-nova-x1', name: 'Industrial Nova X1', badge: null, basePrice: '2499.99', mainImage: '/products/industrial-printer.jpg', category: { name: '3D Printer' } },
+  { id: 5, slug: 'jewelry-craft-g2', name: 'Jewelry Craft G2', badge: null, basePrice: '599.99', mainImage: '/products/jewelry-printer.jpg', category: { name: '3D Printer' } },
+  { id: 6, slug: 'casting-resin-gold', name: 'Casting Resin Gold', badge: null, basePrice: '32.99', mainImage: '/products/casting-resin.jpg', category: { name: 'Resin' } },
+  { id: 7, slug: 'dental-resin-clear', name: 'Dental Resin Clear', badge: null, basePrice: '45.99', mainImage: '/products/dental-resin.jpg', category: { name: 'Resin' } },
+  { id: 8, slug: 'rigid-resin-black', name: 'Rigid Resin Black', badge: null, basePrice: '28.99', mainImage: '/products/rigid-resin.jpg', category: { name: 'Resin' } },
+  { id: 9, slug: 'mono-lcd-screen-6inch', name: 'Mono LCD Screen 6"', badge: null, basePrice: '89.99', mainImage: '/products/lcd-screen.jpg', category: { name: 'Accessories' } },
+  { id: 10, slug: 'acf-film-pack', name: 'ACF/PFA Film Pack', badge: null, basePrice: '19.99', mainImage: '/products/fep-film.jpg', category: { name: 'Accessories' } },
+  { id: 11, slug: 'wash-cure-station', name: 'Wash & Cure Station', badge: null, basePrice: '149.99', mainImage: '/products/wash-cure.jpg', category: { name: 'Accessories' } },
+  { id: 12, slug: 'shoe-sole-printer', name: 'Shoe Sole Printer S3', badge: null, basePrice: '899.99', mainImage: '/products/shoe-printer.jpg', category: { name: '3D Printer' } },
+];
+
+const fallbackCategories = [
+  { id: 1, name: '3D Printer', slug: '3d-printer', description: 'Professional LCD/DLP 3D printers', parentId: null, children: [
+    { id: 11, name: 'Dental 3d Printer', slug: 'dental-3d-printer', parentId: 1 },
+    { id: 12, name: 'Industrial 3d Printer', slug: 'industrial-3d-printer', parentId: 1 },
+    { id: 13, name: 'Jewelry 3d Printer', slug: 'jewelry-3d-printer', parentId: 1 },
+    { id: 14, name: 'Shoe 3d Printer', slug: 'shoe-3d-printer', parentId: 1 },
+    { id: 15, name: 'Wash & Cure Machine', slug: 'wash-cure-machine', parentId: 1 },
+  ]},
+  { id: 2, name: 'Resin', slug: 'resin', description: 'Premium photopolymer resins', parentId: null, children: [
+    { id: 21, name: 'Casting Resin Series', slug: 'casting-resin-series', parentId: 2 },
+    { id: 22, name: 'Dental Resin Series', slug: 'dental-resin-series', parentId: 2 },
+    { id: 23, name: 'Engineering Resin Series', slug: 'engineering-resin-series', parentId: 2 },
+    { id: 24, name: 'Rigid Resin Series', slug: 'rigid-resin-series', parentId: 2 },
+    { id: 25, name: 'Other Resin Series', slug: 'other-resin-series', parentId: 2 },
+  ]},
+  { id: 3, name: 'Accessories', slug: 'accessories', description: 'Printer parts and tools', parentId: null, children: [
+    { id: 31, name: '3d Printer Mono LCD', slug: '3d-printer-mono-lcd', parentId: 3 },
+    { id: 32, name: 'ACF/PFA Films', slug: 'acf-pfa-films', parentId: 3 },
+  ]},
+];
+
 export default function ProductList() {
   const [searchParams] = useSearchParams();
   const categorySlug = searchParams.get('category') || undefined;
   const search = searchParams.get('search') || undefined;
   const { addItem } = useCart();
 
-  const { data: products, isLoading } = trpc.product.list.useQuery({
+  const { data: apiProducts, isLoading } = trpc.product.list.useQuery({
     categorySlug: categorySlug || undefined,
     search: search || undefined,
   });
-  const { data: categories } = trpc.category.list.useQuery();
-  const activeCat = categories?.find(c => c.slug === categorySlug);
+  const { data: apiCategories } = trpc.category.list.useQuery();
+  
+  const products = (apiProducts && apiProducts.length > 0) ? apiProducts : fallbackProducts;
+  const categories = (apiCategories && apiCategories.length > 0) ? apiCategories : fallbackCategories;
+  const activeCat = categories?.find(c => c.slug === categorySlug) || categories?.find(c => c.children?.some((sub: any) => sub.slug === categorySlug))?.children?.find((sub: any) => sub.slug === categorySlug);
+
+  // If showing fallback and a category slug is present, try to filter by category name
+  let displayProducts = products;
+  if (apiProducts?.length === 0 && categorySlug && products === fallbackProducts) {
+    const catName = activeCat?.name?.toLowerCase() || '';
+    if (catName.includes('printer') || catName.includes('machine')) {
+      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('printer') || p.category?.name?.toLowerCase().includes('accessories'));
+    } else if (catName.includes('resin')) {
+      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('resin'));
+    } else if (catName.includes('accessories') || catName.includes('film') || catName.includes('lcd')) {
+      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('accessories'));
+    }
+  }
 
   const handleQuickAdd = (product: any) => {
     const price = parseFloat(String(product.basePrice || 0));
@@ -60,7 +112,7 @@ export default function ProductList() {
         <div className="flex-1">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-xl font-bold">{activeCat ? activeCat.name : search ? `Search: "${search}"` : 'All Products'}</h1>
-            <span className="text-sm text-neutral-500">{products?.length || 0} products</span>
+            <span className="text-sm text-neutral-500">{displayProducts?.length || 0} products</span>
           </div>
 
           {isLoading ? (
@@ -69,7 +121,7 @@ export default function ProductList() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products?.map(product => (
+              {displayProducts?.map(product => (
                 <div key={product.id} className="group">
                   <div className="relative bg-neutral-50 rounded-xl overflow-hidden aspect-square mb-3">
                     <Link to={`/product/${product.slug}`}>
@@ -100,7 +152,7 @@ export default function ProductList() {
             </div>
           )}
 
-          {products?.length === 0 && !isLoading && (
+          {displayProducts?.length === 0 && !isLoading && (
             <div className="text-center py-16 text-neutral-400">No products found.</div>
           )}
         </div>
