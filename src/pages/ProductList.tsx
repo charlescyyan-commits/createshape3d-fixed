@@ -5,18 +5,18 @@ import { toast } from 'sonner';
 import { useCart } from '@/contexts/CartContext';
 
 const fallbackProducts = [
-  { id: 1, slug: 'washable-resin-premium', name: 'Washable Resin Premium', badge: 'BESTSELLER', basePrice: '25.99', mainImage: '/products/resin-washable-1kg.jpg', category: { name: 'Resin' } },
-  { id: 2, slug: 'prolite-m4k', name: 'CS3D ProLite M4K', badge: 'POPULAR', basePrice: '299.99', mainImage: '/products/printer-main.jpg', category: { name: '3D Printer' } },
-  { id: 3, slug: 'dental-stellar-d100', name: 'Dental Stellar D100', badge: null, basePrice: '1299.99', mainImage: '/products/dental-printer.jpg', category: { name: '3D Printer' } },
-  { id: 4, slug: 'industrial-nova-x1', name: 'Industrial Nova X1', badge: null, basePrice: '2499.99', mainImage: '/products/industrial-printer.jpg', category: { name: '3D Printer' } },
-  { id: 5, slug: 'jewelry-craft-g2', name: 'Jewelry Craft G2', badge: null, basePrice: '599.99', mainImage: '/products/jewelry-printer.jpg', category: { name: '3D Printer' } },
-  { id: 6, slug: 'casting-resin-gold', name: 'Casting Resin Gold', badge: null, basePrice: '32.99', mainImage: '/products/casting-resin.jpg', category: { name: 'Resin' } },
-  { id: 7, slug: 'dental-resin-clear', name: 'Dental Resin Clear', badge: null, basePrice: '45.99', mainImage: '/products/dental-resin.jpg', category: { name: 'Resin' } },
-  { id: 8, slug: 'rigid-resin-black', name: 'Rigid Resin Black', badge: null, basePrice: '28.99', mainImage: '/products/rigid-resin.jpg', category: { name: 'Resin' } },
-  { id: 9, slug: 'mono-lcd-screen-6inch', name: 'Mono LCD Screen 6"', badge: null, basePrice: '89.99', mainImage: '/products/lcd-screen.jpg', category: { name: 'Accessories' } },
-  { id: 10, slug: 'acf-film-pack', name: 'ACF/PFA Film Pack', badge: null, basePrice: '19.99', mainImage: '/products/fep-film.jpg', category: { name: 'Accessories' } },
-  { id: 11, slug: 'wash-cure-station', name: 'Wash & Cure Station', badge: null, basePrice: '149.99', mainImage: '/products/wash-cure.jpg', category: { name: 'Accessories' } },
-  { id: 12, slug: 'shoe-sole-printer', name: 'Shoe Sole Printer S3', badge: null, basePrice: '899.99', mainImage: '/products/shoe-printer.jpg', category: { name: '3D Printer' } },
+  { id: 1, slug: 'washable-resin-premium', name: 'Washable Resin Premium', badge: 'BESTSELLER', basePrice: '25.99', mainImage: '/products/resin-washable-1kg.jpg', categorySlug: 'resin', subSlug: 'engineering-resin-series' },
+  { id: 6, slug: 'casting-resin-gold', name: 'Casting Resin Gold', badge: null, basePrice: '32.99', mainImage: '/products/casting-resin.jpg', categorySlug: 'resin', subSlug: 'casting-resin-series' },
+  { id: 7, slug: 'dental-resin-clear', name: 'Dental Resin Clear', badge: null, basePrice: '45.99', mainImage: '/products/dental-resin.jpg', categorySlug: 'resin', subSlug: 'dental-resin-series' },
+  { id: 8, slug: 'rigid-resin-black', name: 'Rigid Resin Black', badge: null, basePrice: '28.99', mainImage: '/products/rigid-resin.jpg', categorySlug: 'resin', subSlug: 'rigid-resin-series' },
+  { id: 2, slug: 'prolite-m4k', name: 'CS3D ProLite M4K', badge: 'POPULAR', basePrice: '299.99', mainImage: '/products/printer-main.jpg', categorySlug: '3d-printer', subSlug: 'industrial-3d-printer' },
+  { id: 3, slug: 'dental-stellar-d100', name: 'Dental Stellar D100', badge: null, basePrice: '1299.99', mainImage: '/products/dental-printer.jpg', categorySlug: '3d-printer', subSlug: 'dental-3d-printer' },
+  { id: 4, slug: 'industrial-nova-x1', name: 'Industrial Nova X1', badge: null, basePrice: '2499.99', mainImage: '/products/industrial-printer.jpg', categorySlug: '3d-printer', subSlug: 'industrial-3d-printer' },
+  { id: 5, slug: 'jewelry-craft-g2', name: 'Jewelry Craft G2', badge: null, basePrice: '599.99', mainImage: '/products/jewelry-printer.jpg', categorySlug: '3d-printer', subSlug: 'jewelry-3d-printer' },
+  { id: 12, slug: 'shoe-sole-printer', name: 'Shoe Sole Printer S3', badge: null, basePrice: '899.99', mainImage: '/products/shoe-printer.jpg', categorySlug: '3d-printer', subSlug: 'shoe-3d-printer' },
+  { id: 11, slug: 'wash-cure-station', name: 'Wash & Cure Station', badge: null, basePrice: '149.99', mainImage: '/products/wash-cure.jpg', categorySlug: '3d-printer', subSlug: 'wash-cure-machine' },
+  { id: 9, slug: 'mono-lcd-screen-6inch', name: 'Mono LCD Screen 6"', badge: null, basePrice: '89.99', mainImage: '/products/lcd-screen.jpg', categorySlug: 'accessories', subSlug: '3d-printer-mono-lcd' },
+  { id: 10, slug: 'acf-film-pack', name: 'ACF/PFA Film Pack', badge: null, basePrice: '19.99', mainImage: '/products/fep-film.jpg', categorySlug: 'accessories', subSlug: 'acf-pfa-films' },
 ];
 
 const fallbackCategories = [
@@ -40,6 +40,22 @@ const fallbackCategories = [
   ]},
 ];
 
+// Sub-category to parent mapping for filtering
+const subCategoryParents: Record<string, string> = {
+  'dental-3d-printer': '3d-printer',
+  'industrial-3d-printer': '3d-printer',
+  'jewelry-3d-printer': '3d-printer',
+  'shoe-3d-printer': '3d-printer',
+  'wash-cure-machine': '3d-printer',
+  'casting-resin-series': 'resin',
+  'dental-resin-series': 'resin',
+  'engineering-resin-series': 'resin',
+  'rigid-resin-series': 'resin',
+  'other-resin-series': 'resin',
+  '3d-printer-mono-lcd': 'accessories',
+  'acf-pfa-films': 'accessories',
+};
+
 export default function ProductList() {
   const [searchParams] = useSearchParams();
   const categorySlug = searchParams.get('category') || undefined;
@@ -52,21 +68,31 @@ export default function ProductList() {
   });
   const { data: apiCategories } = trpc.category.list.useQuery();
   
-  const products = (apiProducts && apiProducts.length > 0) ? apiProducts : fallbackProducts;
   const categories = (apiCategories && apiCategories.length > 0) ? apiCategories : fallbackCategories;
-  const activeCat = categories?.find(c => c.slug === categorySlug) || categories?.find(c => c.children?.some((sub: any) => sub.slug === categorySlug))?.children?.find((sub: any) => sub.slug === categorySlug);
+  const activeCat = categories?.find((c: any) => c.slug === categorySlug) || categories?.find((c: any) => c.children?.some((sub: any) => sub.slug === categorySlug))?.children?.find((sub: any) => sub.slug === categorySlug);
 
-  // If showing fallback and a category slug is present, try to filter by category name
-  let displayProducts = products;
-  if (apiProducts?.length === 0 && categorySlug && products === fallbackProducts) {
-    const catName = activeCat?.name?.toLowerCase() || '';
-    if (catName.includes('printer') || catName.includes('machine')) {
-      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('printer') || p.category?.name?.toLowerCase().includes('accessories'));
-    } else if (catName.includes('resin')) {
-      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('resin'));
-    } else if (catName.includes('accessories') || catName.includes('film') || catName.includes('lcd')) {
-      displayProducts = fallbackProducts.filter(p => p.category?.name?.toLowerCase().includes('accessories'));
+  // Determine which products to display
+  let displayProducts: any[] = [];
+  
+  if (apiProducts && apiProducts.length > 0) {
+    // API returned real products
+    displayProducts = apiProducts;
+  } else if (search) {
+    // Search mode - filter fallback by name
+    displayProducts = fallbackProducts.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  } else if (categorySlug) {
+    // Category mode - filter fallback precisely by category/sub-category
+    const isSubCategory = subCategoryParents[categorySlug];
+    if (isSubCategory) {
+      // Sub-category selected: show products matching the sub-category
+      displayProducts = fallbackProducts.filter(p => p.subSlug === categorySlug);
+    } else {
+      // Parent category selected: show all products in that parent category
+      displayProducts = fallbackProducts.filter(p => p.categorySlug === categorySlug);
     }
+  } else {
+    // No filter - show all fallback products
+    displayProducts = fallbackProducts;
   }
 
   const handleQuickAdd = (product: any) => {
