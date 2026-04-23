@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import HeroCarousel from '@/components/HeroCarousel';
 import ExploreProducts from '@/components/ExploreProducts';
-import PrintGalleryCarousel from '@/components/PrintGalleryCarousel';
+import PrintGallery from '@/components/PrintGallery';
 
 export default function Home() {
   return (
@@ -10,11 +10,11 @@ export default function Home() {
       {/* 1. Hero Carousel - 3 slides */}
       <HeroCarousel />
 
-      {/* 2. Explore Our Products - 3 square cards */}
+      {/* 2. Explore Our Products - 3 cards with text below */}
       <ExploreProducts />
 
-      {/* 3. Print Gallery - carousel with center zoom */}
-      <PrintGalleryCarousel />
+      {/* 3. Print Gallery - grid of small product images */}
+      <PrintGallery />
 
       {/* 4. CTA Banner */}
       <section className="py-12">
