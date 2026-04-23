@@ -1,141 +1,183 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router';
 
-const galleryItems = [
-  { id: 1, name: 'Dental Aligner', image: '/products/print-sample-1.jpg', category: 'Dental' },
-  { id: 2, name: 'Miniature Figure', image: '/products/print-sample-2.jpg', category: 'Miniatures' },
-  { id: 3, name: 'Jewelry Casting', image: '/products/print-sample-3.jpg', category: 'Jewelry' },
-  { id: 4, name: 'Engineering Part', image: '/products/print-sample-4.jpg', category: 'Prototypes' },
-  { id: 5, name: 'Dental Model', image: '/products/dental-resin.jpg', category: 'Dental' },
-  { id: 6, name: 'Resin Art Print', image: '/products/resin-washable-1kg.jpg', category: 'Art' },
-  { id: 7, name: 'Industrial Mold', image: '/products/industrial-printer.jpg', category: 'Industrial' },
-  { id: 8, name: 'Shoe Prototype', image: '/products/shoe-printer.jpg', category: 'Footwear' },
+const slides = [
+  {
+    id: 1,
+    title: 'Focusing on dentistry',
+    image: '/products/print-sample-1.jpg',
+    link: '/products?category=dental-3d-printer',
+  },
+  {
+    id: 2,
+    title: 'Industrial design',
+    image: '/products/print-sample-2.jpg',
+    link: '/products?category=industrial-3d-printer',
+  },
+  {
+    id: 3,
+    title: 'Carbon fiber seat cushion',
+    image: '/products/print-sample-3.jpg',
+    link: '/products?category=shoe-3d-printer',
+  },
+  {
+    id: 4,
+    title: 'Jewelry casting',
+    image: '/products/print-sample-4.jpg',
+    link: '/products?category=jewelry-3d-printer',
+  },
+  {
+    id: 5,
+    title: 'Engineering prototypes',
+    image: '/products/industrial-printer.jpg',
+    link: '/products?category=engineering-resin-series',
+  },
+  {
+    id: 6,
+    title: 'Dental clear aligners',
+    image: '/products/dental-resin.jpg',
+    link: '/products?category=dental-resin-series',
+  },
 ];
 
 export default function PrintGallery() {
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(1);
+  const total = slides.length;
 
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index);
-    setLightboxOpen(true);
-  };
+  const next = useCallback(() => setActiveIndex((i) => (i + 1) % total), [total]);
+  const prev = useCallback(() => setActiveIndex((i) => (i - 1 + total) % total), [total]);
 
-  const closeLightbox = () => setLightboxOpen(false);
-
-  const nextImage = useCallback(() => {
-    setLightboxIndex((i) => (i + 1) % galleryItems.length);
-  }, []);
-
-  const prevImage = useCallback(() => {
-    setLightboxIndex((i) => (i - 1 + galleryItems.length) % galleryItems.length);
-  }, []);
-
-  // Keyboard navigation
   useEffect(() => {
-    if (!lightboxOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'ArrowLeft') prevImage();
-    };
-    window.addEventListener('keydown', handleKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', handleKey);
-      document.body.style.overflow = '';
-    };
-  }, [lightboxOpen, nextImage, prevImage]);
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
+  }, [next]);
+
+  const getIndex = (offset: number) => (activeIndex + offset + total) % total;
 
   return (
-    <section className="py-16 bg-neutral-50">
+    <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-2xl font-bold mb-8 text-center">Print Gallery</h2>
+        <h2 className="text-3xl lg:text-4xl font-bold text-center mb-3">Applications Across Multiple Sectors</h2>
+        <p className="text-neutral-500 text-center mb-12 max-w-2xl mx-auto">
+          Our products are widely applied across diverse sectors, including but not limited to
+        </p>
 
-        {/* Thumbnail Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {galleryItems.map((item, index) => (
-            <button
-              key={item.id}
-              onClick={() => openLightbox(index)}
-              className="group relative bg-white rounded-xl overflow-hidden border border-neutral-100 hover:shadow-md transition-shadow text-left cursor-pointer"
+        <div className="relative flex items-center justify-center gap-2 lg:gap-4 select-none">
+          {/* Prev */}
+          <button
+            onClick={prev}
+            className="hidden md:flex w-10 h-10 bg-white shadow-lg rounded-full items-center justify-center hover:bg-neutral-50 transition-colors border border-neutral-200 z-10 flex-shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* 3D Perspective Carousel */}
+          <div className="flex items-center justify-center gap-2 lg:gap-4 w-full" style={{ perspective: '1200px' }}>
+            {/* Far Left */}
+            <div
+              className="hidden lg:block flex-shrink-0 w-[12%] transition-all duration-700 cursor-pointer"
+              style={{
+                transform: 'translateZ(-200px) rotateY(25deg)',
+                opacity: 0.4,
+              }}
+              onClick={() => setActiveIndex(getIndex(-2))}
             >
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+              <div className="rounded-2xl overflow-hidden aspect-[4/5]">
+                <img src={slides[getIndex(-2)].image} alt="" className="w-full h-full object-cover" />
               </div>
-              {/* Hover overlay */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-[10px] text-white/70 uppercase tracking-wider">{item.category}</span>
-                <p className="text-sm font-semibold text-white">{item.name}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
-          onClick={closeLightbox}
-        >
-          {/* Close button */}
-          <button
-            onClick={closeLightbox}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          {/* Prev arrow */}
-          <button
-            onClick={(e) => { e.stopPropagation(); prevImage(); }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          {/* Main image - enlarged */}
-          <div
-            className="max-w-[85vw] max-h-[80vh] flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={galleryItems[lightboxIndex].image}
-              alt={galleryItems[lightboxIndex].name}
-              className="max-w-full max-h-[70vh] object-contain rounded-lg"
-            />
-            <div className="mt-4 text-center">
-              <span className="text-[11px] text-white/60 uppercase tracking-wider">{galleryItems[lightboxIndex].category}</span>
-              <p className="text-lg font-semibold text-white">{galleryItems[lightboxIndex].name}</p>
             </div>
-            {/* Thumbnail strip */}
-            <div className="flex gap-2 mt-4 overflow-x-auto max-w-full px-4 pb-2">
-              {galleryItems.map((item, i) => (
-                <button
-                  key={item.id}
-                  onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
-                  className={`w-14 h-14 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-colors ${i === lightboxIndex ? 'border-white' : 'border-white/30 hover:border-white/60'}`}
-                >
-                  <img src={item.image} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
+
+            {/* Near Left */}
+            <div
+              className="hidden md:block flex-shrink-0 w-[18%] transition-all duration-700 cursor-pointer"
+              style={{
+                transform: 'translateZ(-100px) rotateY(15deg)',
+                opacity: 0.6,
+              }}
+              onClick={() => setActiveIndex(getIndex(-1))}
+            >
+              <div className="rounded-2xl overflow-hidden aspect-[4/5] shadow-lg">
+                <img src={slides[getIndex(-1)].image} alt="" className="w-full h-full object-cover" />
+              </div>
+              <p className="text-center text-sm text-neutral-600 mt-3 font-medium">{slides[getIndex(-1)].title}</p>
+            </div>
+
+            {/* Center - Active */}
+            <Link
+              to={slides[activeIndex].link}
+              className="flex-shrink-0 w-[55%] md:w-[45%] lg:w-[35%] transition-all duration-700 relative group"
+              style={{
+                transform: 'translateZ(0px) rotateY(0deg)',
+                opacity: 1,
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden aspect-[4/5] shadow-2xl relative">
+                <img
+                  src={slides[activeIndex].image}
+                  alt={slides[activeIndex].title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                {/* Bottom overlay */}
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-24">
+                  <p className="text-2xl lg:text-3xl font-bold text-white">{slides[activeIndex].title}</p>
+                  <p className="text-sm text-white/80 mt-2 flex items-center gap-1 group-hover:gap-2 transition-all">
+                    More Application Solution <ChevronRight className="w-4 h-4" /><ChevronRight className="w-4 h-4 -ml-2" />
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Near Right */}
+            <div
+              className="hidden md:block flex-shrink-0 w-[18%] transition-all duration-700 cursor-pointer"
+              style={{
+                transform: 'translateZ(-100px) rotateY(-15deg)',
+                opacity: 0.6,
+              }}
+              onClick={() => setActiveIndex(getIndex(1))}
+            >
+              <div className="rounded-2xl overflow-hidden aspect-[4/5] shadow-lg">
+                <img src={slides[getIndex(1)].image} alt="" className="w-full h-full object-cover" />
+              </div>
+              <p className="text-center text-sm text-neutral-600 mt-3 font-medium">{slides[getIndex(1)].title}</p>
+            </div>
+
+            {/* Far Right */}
+            <div
+              className="hidden lg:block flex-shrink-0 w-[12%] transition-all duration-700 cursor-pointer"
+              style={{
+                transform: 'translateZ(-200px) rotateY(-25deg)',
+                opacity: 0.4,
+              }}
+              onClick={() => setActiveIndex(getIndex(2))}
+            >
+              <div className="rounded-2xl overflow-hidden aspect-[4/5]">
+                <img src={slides[getIndex(2)].image} alt="" className="w-full h-full object-cover" />
+              </div>
             </div>
           </div>
 
-          {/* Next arrow */}
+          {/* Next */}
           <button
-            onClick={(e) => { e.stopPropagation(); nextImage(); }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+            onClick={next}
+            className="hidden md:flex w-10 h-10 bg-white shadow-lg rounded-full items-center justify-center hover:bg-neutral-50 transition-colors border border-neutral-200 z-10 flex-shrink-0"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-      )}
+
+        {/* Dots */}
+        <div className="flex justify-center gap-2 mt-8">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              className={`h-2 rounded-full transition-all ${i === activeIndex ? 'w-8 bg-neutral-900' : 'w-2 bg-neutral-300 hover:bg-neutral-400'}`}
+            />
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

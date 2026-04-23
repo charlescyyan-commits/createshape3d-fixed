@@ -14,6 +14,7 @@ import AdminCategories from './pages/admin/AdminCategories'
 import AdminInquiries from './pages/admin/AdminInquiries'
 import AdminSettings from './pages/admin/AdminSettings'
 import DentalPrinter from './pages/DentalPrinter'
+import CategoryPage from './pages/CategoryPage'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductList />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/dental-printer" element={<DentalPrinter />} />
           <Route path="/cart" element={<Cart />} />
