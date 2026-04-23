@@ -1,5 +1,5 @@
 import { createRouter, publicQuery } from "./middleware";
-import { productRouter, categoryRouter } from "./productRouter";
+import { productRouter, categoryRouter, bannerRouter } from "./productRouter";
 import { inquiryRouter } from "./inquiryRouter";
 import { settingRouter } from "./settingRouter";
 import { cartRouter } from "./cartRouter";
@@ -9,6 +9,7 @@ export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   product: productRouter,
   category: categoryRouter,
+  banner: bannerRouter,
   inquiry: inquiryRouter,
   setting: settingRouter,
   cart: cartRouter,

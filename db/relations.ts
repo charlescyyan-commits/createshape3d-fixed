@@ -1,7 +1,9 @@
 import { relations } from "drizzle-orm";
-import { products, productImages, productVariants, variantAttributeOptions, categories } from "./schema";
+import { products, productImages, productVariants, variantAttributeOptions, categories, bannerSlides } from "./schema";
 
-export const categoriesRelations = relations(categories, ({ many }) => ({
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
+  parent: one(categories, { fields: [categories.parentId], references: [categories.id] }),
+  children: many(categories),
   products: many(products),
 }));
 
@@ -23,3 +25,5 @@ export const variantOptionsRelations = relations(variantAttributeOptions, ({ one
 export const productVariantsRelations = relations(productVariants, ({ one }) => ({
   product: one(products, { fields: [productVariants.productId], references: [products.id] }),
 }));
+
+export const bannerSlidesRelations = relations(bannerSlides, ({}) => ({}));

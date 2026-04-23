@@ -13,11 +13,11 @@ export default function AdminCategories() {
   const update = trpc.category.update.useMutation({ onSuccess: () => { toast.success('Updated'); utils.category.list.invalidate(); setEditing(null); }, onError: (e) => toast.error(e.message) });
   const del = trpc.category.delete.useMutation({ onSuccess: () => { toast.success('Deleted'); utils.category.list.invalidate(); }, onError: (e) => toast.error(e.message) });
 
-  const startNew = () => { setEditing(-1 as number); setForm({ name: '', slug: '', description: '', image: '' }); };
-  const startEdit = (c: any) => { setEditing(Number(c.id) as number); setForm({ name: c.name, slug: c.slug, description: c.description || '', image: c.image || '' }); };
+  const startNew = () => { setEditing(-1); setForm({ name: '', slug: '', description: '', image: '' }); };
+  const startEdit = (c: any) => { setEditing(c.id ?? 0); setForm({ name: c.name, slug: c.slug, description: c.description || '', image: c.image || '' }); };
   const save = () => {
     const data = { ...form, description: form.description || undefined, image: form.image || undefined };
-    if (editing === -1) create.mutate(data); else update.mutate({ id: editing, data });
+    if (editing === -1) create.mutate(data); else if (editing !== null) update.mutate({ id: editing, data });
   };
 
   return (
