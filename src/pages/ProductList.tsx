@@ -10,7 +10,7 @@ const fallbackProducts = [
   { id: 7, slug: 'dental-resin-clear', name: 'Dental Resin Clear', badge: null, basePrice: '45.99', mainImage: '/products/dental-resin.jpg', categorySlug: 'resin', subSlug: 'dental-resin-series' },
   { id: 8, slug: 'rigid-resin-black', name: 'Rigid Resin Black', badge: null, basePrice: '28.99', mainImage: '/products/rigid-resin.jpg', categorySlug: 'resin', subSlug: 'rigid-resin-series' },
   { id: 2, slug: 'prolite-m4k', name: 'CS3D ProLite M4K', badge: 'POPULAR', basePrice: '299.99', mainImage: '/products/printer-main.jpg', categorySlug: '3d-printer', subSlug: 'industrial-3d-printer' },
-  { id: 3, slug: 'dental-stellar-d100', name: 'Dental Stellar D100', badge: null, basePrice: '1299.99', mainImage: '/products/dental-printer.jpg', categorySlug: '3d-printer', subSlug: 'dental-3d-printer' },
+  { id: 3, slug: 'dental-printer', name: 'Dental Stellar D100', badge: null, basePrice: '1299.99', mainImage: '/products/dental-printer.jpg', categorySlug: '3d-printer', subSlug: 'dental-3d-printer' },
   { id: 4, slug: 'industrial-nova-x1', name: 'Industrial Nova X1', badge: null, basePrice: '2499.99', mainImage: '/products/industrial-printer.jpg', categorySlug: '3d-printer', subSlug: 'industrial-3d-printer' },
   { id: 5, slug: 'jewelry-craft-g2', name: 'Jewelry Craft G2', badge: null, basePrice: '599.99', mainImage: '/products/jewelry-printer.jpg', categorySlug: '3d-printer', subSlug: 'jewelry-3d-printer' },
   { id: 12, slug: 'shoe-sole-printer', name: 'Shoe Sole Printer S3', badge: null, basePrice: '899.99', mainImage: '/products/shoe-printer.jpg', categorySlug: '3d-printer', subSlug: 'shoe-3d-printer' },

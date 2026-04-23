@@ -26,7 +26,7 @@ const fallbackProducts = [
   },
   {
     id: 3,
-    slug: 'dental-stellar-d100',
+    slug: 'dental-printer',
     name: 'Dental Stellar D100',
     subtitle: 'High-precision dental 3D printer',
     shortDesc: 'Professional dental 3D printer with advanced LCD technology.',

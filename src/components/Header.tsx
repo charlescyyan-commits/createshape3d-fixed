@@ -1,26 +1,41 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router';
 import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { trpc } from '@/providers/trpc';
 
-const menuItems = [
+interface MenuProduct {
+  name: string;
+  image: string;
+  href: string;
+  price: string;
+  subCategory: string;
+}
+
+interface MenuItem {
+  label: string;
+  href?: string;
+  children?: { label: string; href: string }[];
+  products?: MenuProduct[];
+}
+
+const menuItems: MenuItem[] = [
   {
     label: '3D Printer',
     children: [
-      { label: 'Dental 3d Printer', href: '/products?category=dental-3d-printer' },
+      { label: 'Dental 3d Printer', href: '/dental-printer' },
       { label: 'Industrial 3d Printer', href: '/products?category=industrial-3d-printer' },
       { label: 'Jewelry 3d Printer', href: '/products?category=jewelry-3d-printer' },
       { label: 'Shoe 3d Printer', href: '/products?category=shoe-3d-printer' },
       { label: 'Wash & Cure Machine', href: '/products?category=wash-cure-machine' },
     ],
     products: [
-      { name: 'CS3D ProLite M4K', image: '/products/printer-main.jpg', href: '/product/prolite-m4k', price: '$299.99' },
-      { name: 'Dental Stellar D100', image: '/products/dental-printer.jpg', href: '/product/dental-stellar-d100', price: '$1,299.99' },
-      { name: 'Industrial Nova X1', image: '/products/industrial-printer.jpg', href: '/product/industrial-nova-x1', price: '$2,499.99' },
-      { name: 'Jewelry Craft G2', image: '/products/jewelry-printer.jpg', href: '/product/jewelry-craft-g2', price: '$599.99' },
-      { name: 'Shoe Sole Printer S3', image: '/products/shoe-printer.jpg', href: '/product/shoe-sole-printer', price: '$899.99' },
-      { name: 'Wash & Cure Station', image: '/products/wash-cure.jpg', href: '/product/wash-cure-station', price: '$149.99' },
+      { name: 'Dental Stellar D100', image: '/products/dental-printer.jpg', href: '/product/dental-stellar-d100', price: '$1,299.99', subCategory: 'dental-3d-printer' },
+      { name: 'CS3D ProLite M4K', image: '/products/printer-main.jpg', href: '/product/prolite-m4k', price: '$299.99', subCategory: 'industrial-3d-printer' },
+      { name: 'Industrial Nova X1', image: '/products/industrial-printer.jpg', href: '/product/industrial-nova-x1', price: '$2,499.99', subCategory: 'industrial-3d-printer' },
+      { name: 'Jewelry Craft G2', image: '/products/jewelry-printer.jpg', href: '/product/jewelry-craft-g2', price: '$599.99', subCategory: 'jewelry-3d-printer' },
+      { name: 'Shoe Sole Printer S3', image: '/products/shoe-printer.jpg', href: '/product/shoe-sole-printer', price: '$899.99', subCategory: 'shoe-3d-printer' },
+      { name: 'Wash & Cure Station', image: '/products/wash-cure.jpg', href: '/product/wash-cure-station', price: '$149.99', subCategory: 'wash-cure-machine' },
     ],
   },
   {
@@ -33,10 +48,10 @@ const menuItems = [
       { label: 'Other Resin Series', href: '/products?category=other-resin-series' },
     ],
     products: [
-      { name: 'Washable Resin Premium', image: '/products/resin-washable-1kg.jpg', href: '/product/washable-resin-premium', price: '$25.99' },
-      { name: 'Casting Resin Gold', image: '/products/casting-resin.jpg', href: '/product/casting-resin-gold', price: '$32.99' },
-      { name: 'Dental Resin Clear', image: '/products/dental-resin.jpg', href: '/product/dental-resin-clear', price: '$45.99' },
-      { name: 'Rigid Resin Black', image: '/products/rigid-resin.jpg', href: '/product/rigid-resin-black', price: '$28.99' },
+      { name: 'Casting Resin Gold', image: '/products/casting-resin.jpg', href: '/product/casting-resin-gold', price: '$32.99', subCategory: 'casting-resin-series' },
+      { name: 'Dental Resin Clear', image: '/products/dental-resin.jpg', href: '/product/dental-resin-clear', price: '$45.99', subCategory: 'dental-resin-series' },
+      { name: 'Washable Resin Premium', image: '/products/resin-washable-1kg.jpg', href: '/product/washable-resin-premium', price: '$25.99', subCategory: 'engineering-resin-series' },
+      { name: 'Rigid Resin Black', image: '/products/rigid-resin.jpg', href: '/product/rigid-resin-black', price: '$28.99', subCategory: 'rigid-resin-series' },
     ],
   },
   {
@@ -46,8 +61,8 @@ const menuItems = [
       { label: 'ACF/PFA Films', href: '/products?category=acf-pfa-films' },
     ],
     products: [
-      { name: 'Mono LCD Screen 6"', image: '/products/lcd-screen.jpg', href: '/product/mono-lcd-screen-6inch', price: '$89.99' },
-      { name: 'ACF/PFA Film Pack', image: '/products/fep-film.jpg', href: '/product/acf-film-pack', price: '$19.99' },
+      { name: 'Mono LCD Screen 6"', image: '/products/lcd-screen.jpg', href: '/product/mono-lcd-screen-6inch', price: '$89.99', subCategory: '3d-printer-mono-lcd' },
+      { name: 'ACF/PFA Film Pack', image: '/products/fep-film.jpg', href: '/product/acf-film-pack', price: '$19.99', subCategory: 'acf-pfa-films' },
     ],
   },
   {
@@ -66,17 +81,49 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { totalCount } = useCart();
   const { data: settings } = trpc.setting.list.useQuery();
   const getSetting = (key: string) => settings?.find(s => s.key === key)?.value;
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', h);
     return () => window.removeEventListener('scroll', h);
   }, []);
+
+  const getSubSlugFromHref = (href: string) => {
+    const match = href.match(/category=([^&]+)/);
+    return match ? match[1] : '';
+  };
+
+  const handleNavEnter = useCallback((item: MenuItem) => {
+    if (item.children && item.products) {
+      const firstChildSlug = getSubSlugFromHref(item.children[0].href);
+      setActiveSubCategory(firstChildSlug);
+    }
+    setActiveDropdown(item.label);
+  }, []);
+
+  const handleSubEnter = useCallback((childHref: string) => {
+    const slug = getSubSlugFromHref(childHref);
+    setActiveSubCategory(slug);
+  }, []);
+
+  const getFilteredProducts = (item: MenuItem) => {
+    if (!item.products || !activeSubCategory) return item.products || [];
+    const filtered = item.products.filter(p => p.subCategory === activeSubCategory);
+    return filtered.length > 0 ? filtered : item.products;
+  };
+
+  const getActiveSubLabel = (item: MenuItem) => {
+    if (!activeSubCategory || !item.children) return '';
+    const child = item.children.find(c => getSubSlugFromHref(c.href) === activeSubCategory);
+    return child?.label || '';
+  };
 
   return (
     <header className={`sticky top-0 z-50 bg-white border-b border-neutral-200 transition-shadow ${scrolled ? 'shadow-sm' : ''}`}>
@@ -87,7 +134,7 @@ export default function Header() {
 
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center h-16">
-          {/* Logo - left side */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-6">
             {getSetting('site_logo') ? (
               <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
@@ -101,13 +148,13 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Desktop Nav - always show on sm+ with compact sizing */}
-          <nav className="hidden sm:flex items-center gap-0.5 lg:gap-1">
+          {/* Desktop Nav */}
+          <nav ref={navRef} className="hidden sm:flex items-center gap-0.5 lg:gap-1">
             {menuItems.map((item) => (
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() => item.children && setActiveDropdown(item.label)}
+                onMouseEnter={() => handleNavEnter(item)}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
                 {item.href ? (
@@ -120,39 +167,49 @@ export default function Header() {
                   </button>
                 )}
 
-                {/* Mega Menu Dropdown */}
+                {/* Mega Menu with subcategory switching */}
                 {item.children && activeDropdown === item.label && item.products && (
                   <div
-                    ref={dropdownRef}
+                    ref={megaMenuRef}
                     className="fixed left-0 right-0 top-[calc(4rem+1px)] bg-white border-b border-neutral-200 shadow-xl z-50"
                     onMouseEnter={() => setActiveDropdown(item.label)}
-                    onMouseLeave={() => setActiveDropdown(null)}
+                    onMouseLeave={() => { setActiveDropdown(null); setActiveSubCategory(null); }}
                   >
                     <div className="max-w-7xl mx-auto px-4 py-6">
                       <div className="flex gap-8">
-                        {/* Left: Category links */}
+                        {/* Left: Subcategory links */}
                         <div className="w-56 flex-shrink-0 border-r border-neutral-100 pr-6">
                           <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3">{item.label} Categories</h3>
-                          <ul className="space-y-1">
-                            {item.children.map((child) => (
-                              <li key={child.label}>
-                                <Link
-                                  to={child.href || '#'}
-                                  className="block py-1.5 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                                  onClick={() => setActiveDropdown(null)}
-                                >
-                                  {child.label}
-                                </Link>
-                              </li>
-                            ))}
+                          <ul className="space-y-0.5">
+                            {item.children.map((child) => {
+                              const childSlug = getSubSlugFromHref(child.href);
+                              const isActive = activeSubCategory === childSlug;
+                              return (
+                                <li key={child.label}>
+                                  <Link
+                                    to={child.href}
+                                    className={`block py-1.5 px-3 rounded-lg text-sm transition-colors ${isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}`}
+                                    onMouseEnter={() => handleSubEnter(child.href)}
+                                    onClick={() => setActiveDropdown(null)}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
 
-                        {/* Right: Product squares */}
+                        {/* Right: Products for active subcategory */}
                         <div className="flex-1">
-                          <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3">Featured {item.label}</h3>
-                          <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
-                            {item.products.map((product) => (
+                          <div className="flex items-center gap-3 mb-3">
+                            <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                              {getActiveSubLabel(item) || item.label}
+                            </h3>
+                            <span className="text-[11px] text-neutral-400">{getFilteredProducts(item).length} products</span>
+                          </div>
+                          <div className="grid grid-cols-3 lg:grid-cols-5 gap-4">
+                            {getFilteredProducts(item).map((product) => (
                               <Link
                                 key={product.name}
                                 to={product.href}
@@ -177,11 +234,11 @@ export default function Header() {
                   </div>
                 )}
 
-                {/* Simple dropdown for Support (no products) */}
+                {/* Simple dropdown for Support */}
                 {item.children && activeDropdown === item.label && !item.products && (
                   <div className="absolute top-full left-0 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 min-w-[200px] z-50">
                     {item.children.map((child) => (
-                      <Link key={child.label} to={child.href || '#'} className="block px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => setActiveDropdown(null)}>
+                      <Link key={child.label} to={child.href} className="block px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => setActiveDropdown(null)}>
                         {child.label}
                       </Link>
                     ))}
@@ -191,10 +248,10 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Spacer - pushes actions to right */}
+          {/* Spacer */}
           <div className="flex-1 min-w-0" />
 
-          {/* Actions - right side */}
+          {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
               <Search className="w-[18px] h-[18px] text-neutral-600" />
@@ -224,6 +281,7 @@ export default function Header() {
         )}
       </div>
 
+      {/* Mobile menu */}
       {menuOpen && (
         <div className="sm:hidden bg-white border-t border-neutral-200 px-4 py-4 max-h-[70vh] overflow-auto">
           {menuItems.map((item) => (
@@ -236,7 +294,7 @@ export default function Header() {
                   {item.children && (
                     <div className="pl-4 border-l border-neutral-200 ml-2">
                       {item.children.map((child) => (
-                        <Link key={child.label} to={child.href || '#'} onClick={() => setMenuOpen(false)} className="block py-1.5 text-sm text-neutral-500 hover:text-neutral-900">{child.label}</Link>
+                        <Link key={child.label} to={child.href} onClick={() => setMenuOpen(false)} className="block py-1.5 text-sm text-neutral-500 hover:text-neutral-900">{child.label}</Link>
                       ))}
                     </div>
                   )}
