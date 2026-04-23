@@ -4,7 +4,6 @@ import { db } from "./queries/connection";
 import { products, productImages, productVariants, variantAttributeOptions, categories, bannerSlides } from "@db/schema";
 import { eq, and, asc, like, sql } from "drizzle-orm";
 
-const isActiveProducts = () => sql`${products.isActive} = 1`;
 const isFeaturedProducts = () => sql`${products.isFeatured} = 1`;
 const isActiveBanners = () => sql`${bannerSlides.isActive} = 1`;
 

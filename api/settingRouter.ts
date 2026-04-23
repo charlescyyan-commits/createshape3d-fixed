@@ -2,24 +2,25 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { siteSettings } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export const settingRouter = createRouter({
   list: publicQuery.query(async () => {
-    return db.query.siteSettings.findMany();
+    return db.select().from(siteSettings).orderBy(asc(siteSettings.key));
   }),
 
   byKey: publicQuery
     .input(z.string())
     .query(async ({ input }) => {
-      return db.query.siteSettings.findFirst({ where: eq(siteSettings.key, input) });
+      const rows = await db.select().from(siteSettings).where(eq(siteSettings.key, input)).limit(1);
+      return rows[0] || null;
     }),
 
   set: publicQuery
     .input(z.object({ key: z.string(), value: z.string().optional(), label: z.string().optional(), groupName: z.string().optional() }))
     .mutation(async ({ input }) => {
-      const existing = await db.query.siteSettings.findFirst({ where: eq(siteSettings.key, input.key) });
-      if (existing) {
+      const rows = await db.select().from(siteSettings).where(eq(siteSettings.key, input.key)).limit(1);
+      if (rows.length > 0) {
         await db.update(siteSettings).set({ value: input.value, label: input.label, groupName: input.groupName }).where(eq(siteSettings.key, input.key));
       } else {
         await db.insert(siteSettings).values(input);

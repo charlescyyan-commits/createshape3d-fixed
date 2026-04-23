@@ -4,13 +4,7 @@ import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { trpc } from '@/providers/trpc';
 
-interface MenuItem {
-  label: string;
-  href?: string;
-  children?: MenuItem[];
-}
-
-const menuItems: MenuItem[] = [
+const menuItems = [
   {
     label: '3D Printer',
     children: [
@@ -67,12 +61,14 @@ export default function Header() {
 
   return (
     <header className={`sticky top-0 z-50 bg-white border-b border-neutral-200 transition-shadow ${scrolled ? 'shadow-sm' : ''}`}>
+      {/* Announcement Bar */}
       <div className="bg-neutral-900 text-white text-[11px] text-center py-1.5 tracking-wider">
         Free shipping on orders over $99 | Premium 3D Printing Solutions
       </div>
+
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo placeholder - reads from site_settings or shows text */}
+        <div className="flex items-center h-16 gap-6">
+          {/* Logo - fixed width on left */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             {getSetting('site_logo') ? (
               <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
@@ -86,21 +82,30 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Desktop Nav with Dropdown */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Desktop Nav - takes remaining space, left-aligned */}
+          <nav className="hidden lg:flex items-center gap-1 flex-1">
             {menuItems.map((item) => (
-              <div key={item.label} className="relative" onMouseEnter={() => item.children && setActiveDropdown(item.label)} onMouseLeave={() => setActiveDropdown(null)}>
+              <div
+                key={item.label}
+                className="relative"
+                onMouseEnter={() => item.children && setActiveDropdown(item.label)}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
                 {item.href ? (
-                  <Link to={item.href} className="px-4 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1">{item.label}</Link>
+                  <Link to={item.href} className="px-3 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1">
+                    {item.label}
+                  </Link>
                 ) : (
-                  <button className="px-4 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1 cursor-pointer">
+                  <button className="px-3 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1 cursor-pointer">
                     {item.label}{item.children && <ChevronDown className="w-3 h-3" />}
                   </button>
                 )}
                 {item.children && activeDropdown === item.label && (
                   <div className="absolute top-full left-0 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 min-w-[220px] z-50">
                     {item.children.map((child) => (
-                      <Link key={child.label} to={child.href || '#'} className="block px-4 py-2.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => setActiveDropdown(null)}>{child.label}</Link>
+                      <Link key={child.label} to={child.href || '#'} className="block px-4 py-2.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => setActiveDropdown(null)}>
+                        {child.label}
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -108,8 +113,8 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
+          {/* Actions - fixed on right */}
+          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
             <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
               <Search className="w-[18px] h-[18px] text-neutral-600" />
             </button>
