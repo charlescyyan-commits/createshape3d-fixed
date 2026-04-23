@@ -53,7 +53,7 @@ const menuItems: MenuItem[] = [
       { label: 'Other Resin Series', href: '/products?category=other-resin-series' },
     ],
     products: [
-      { name: 'Casting Resin Gold', image: '/products/casting-resin.jpg', href: '/product/casting-resin-gold', price: '$32.99', subCategory: 'casting-resin-series' },
+      { name: 'Casting Resin Gold', image: '/products/casting-resin.jpg', href: '/product/casting-resin', price: '$32.99', subCategory: 'casting-resin-series' },
       { name: 'Dental Resin Clear', image: '/products/dental-resin.jpg', href: '/product/dental-resin-clear', price: '$45.99', subCategory: 'dental-resin-series' },
       { name: 'Washable Resin Premium', image: '/products/resin-washable-1kg.jpg', href: '/product/washable-resin-premium', price: '$25.99', subCategory: 'engineering-resin-series' },
       { name: 'Rigid Resin Black', image: '/products/rigid-resin.jpg', href: '/product/rigid-resin-black', price: '$28.99', subCategory: 'rigid-resin-series' },
@@ -66,7 +66,7 @@ const menuItems: MenuItem[] = [
       { label: 'ACF/PFA Films', href: '/products?category=acf-pfa-films' },
     ],
     products: [
-      { name: 'Mono LCD Screen 6"', image: '/products/lcd-screen.jpg', href: '/product/mono-lcd-screen-6inch', price: '$89.99', subCategory: '3d-printer-mono-lcd' },
+      { name: 'Mono LCD Screen 6.6" 4K', image: '/products/lcd-screen.jpg', href: '/product/mono-lcd-screen', price: '$89.99', subCategory: '3d-printer-mono-lcd' },
       { name: 'ACF/PFA Film Pack', image: '/products/fep-film.jpg', href: '/product/acf-film-pack', price: '$19.99', subCategory: 'acf-pfa-films' },
     ],
   },

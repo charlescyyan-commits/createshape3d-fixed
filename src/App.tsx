@@ -15,6 +15,8 @@ import AdminInquiries from './pages/admin/AdminInquiries'
 import AdminSettings from './pages/admin/AdminSettings'
 import DentalPrinter from './pages/DentalPrinter'
 import CategoryPage from './pages/CategoryPage'
+import ResinProduct from './pages/ResinProduct'
+import MonoLCDProduct from './pages/MonoLCDProduct'
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/product/casting-resin" element={<ResinProduct />} />
+          <Route path="/product/mono-lcd-screen" element={<MonoLCDProduct />} />
           <Route path="/dental-printer" element={<DentalPrinter />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/inquiry" element={<Inquiry />} />
