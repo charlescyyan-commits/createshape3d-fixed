@@ -3,10 +3,43 @@ import { toast } from 'sonner';
 import { trpc } from '@/providers/trpc';
 import { useCart } from '@/contexts/CartContext';
 
+const fallbackProducts = [
+  {
+    id: 1,
+    slug: 'washable-resin-premium',
+    name: 'Washable Resin Premium',
+    subtitle: 'No IPA needed — just wash with water',
+    shortDesc: 'Professional-grade water-washable resin for 405nm LCD/DLP 3D printers.',
+    mainImage: '/products/resin-washable-1kg.jpg',
+    basePrice: '25.99',
+    category: { name: 'Resin' },
+  },
+  {
+    id: 2,
+    slug: 'prolite-m4k',
+    name: 'CS3D ProLite M4K',
+    subtitle: '4K Mono LCD · 0.05mm XY Precision',
+    shortDesc: 'Desktop LCD resin 3D printer with 4K monochrome screen.',
+    mainImage: '/products/printer-main.jpg',
+    basePrice: '299.99',
+    category: { name: '3D Printer' },
+  },
+  {
+    id: 3,
+    slug: 'dental-stellar-d100',
+    name: 'Dental Stellar D100',
+    subtitle: 'High-precision dental 3D printer',
+    shortDesc: 'Professional dental 3D printer with advanced LCD technology.',
+    mainImage: '/products/dental-printer.jpg',
+    basePrice: '1299.99',
+    category: { name: '3D Printer' },
+  },
+];
+
 export default function ExploreProducts() {
-  const { data: products } = trpc.product.list.useQuery({});
+  const { data: apiProducts } = trpc.product.list.useQuery({});
   const { addItem } = useCart();
-  const exploreProducts = products?.slice(0, 3) || [];
+  const exploreProducts = apiProducts && apiProducts.length > 0 ? apiProducts.slice(0, 3) : fallbackProducts;
 
   const handleAddToCart = (product: any) => {
     const price = parseFloat(String(product.basePrice || 0));

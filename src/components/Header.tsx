@@ -67,9 +67,9 @@ export default function Header() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center h-16 gap-6">
-          {/* Logo - fixed width on left */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center h-16">
+          {/* Logo - left side */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-6">
             {getSetting('site_logo') ? (
               <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
             ) : (
@@ -82,8 +82,8 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Desktop Nav - takes remaining space, left-aligned */}
-          <nav className="hidden lg:flex items-center gap-1 flex-1">
+          {/* Desktop Nav - natural left flow */}
+          <nav className="hidden lg:flex items-center gap-1">
             {menuItems.map((item) => (
               <div
                 key={item.label}
@@ -113,8 +113,11 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Actions - fixed on right */}
-          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+          {/* Spacer - pushes actions to right */}
+          <div className="flex-1 min-w-0" />
+
+          {/* Actions - right side */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
               <Search className="w-[18px] h-[18px] text-neutral-600" />
             </button>

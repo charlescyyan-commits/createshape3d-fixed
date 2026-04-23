@@ -2,10 +2,7 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { products, productImages, productVariants, variantAttributeOptions, categories, bannerSlides } from "@db/schema";
-import { eq, and, asc, like, sql } from "drizzle-orm";
-
-const isFeaturedProducts = () => sql`${products.isFeatured} = 1`;
-const isActiveBanners = () => sql`${bannerSlides.isActive} = 1`;
+import { eq, asc } from "drizzle-orm";
 
 export const productRouter = createRouter({
   list: publicQuery
@@ -16,21 +13,21 @@ export const productRouter = createRouter({
       featured: z.boolean().optional(),
     }).optional())
     .query(async ({ input }) => {
-      const conditions: any[] = [];
       let categoryId = input?.categoryId;
-
       if (input?.categorySlug) {
         const catRows = await db.select().from(categories).where(eq(categories.slug, input.categorySlug)).limit(1);
         if (catRows.length > 0) categoryId = catRows[0].id;
       }
-      if (categoryId) conditions.push(eq(products.categoryId, categoryId));
-      if (input?.search) conditions.push(like(products.name, `%${input.search}%`));
-      if (input?.featured) conditions.push(isFeaturedProducts());
 
-      const where = conditions.length > 0 ? and(...conditions) : undefined;
-      const productRows = await db.select().from(products).where(where).orderBy(asc(products.sortOrder));
+      // Fetch all products (no boolean where clauses to avoid Drizzle bug), filter in JS
+      const allProducts = await db.select().from(products).orderBy(asc(products.sortOrder));
+      let filtered = allProducts.filter(p => p.isActive);
 
-      const result = await Promise.all(productRows.map(async (p) => {
+      if (categoryId) filtered = filtered.filter(p => p.categoryId === categoryId);
+      if (input?.search) filtered = filtered.filter(p => p.name.toLowerCase().includes((input.search || '').toLowerCase()));
+      if (input?.featured) filtered = filtered.filter(p => p.isFeatured);
+
+      const result = await Promise.all(filtered.map(async (p) => {
         const imgs = await db.select().from(productImages).where(eq(productImages.productId, p.id)).orderBy(asc(productImages.sortOrder));
         let cat = null;
         if (p.categoryId) {
@@ -100,9 +97,9 @@ export const productRouter = createRouter({
 export const categoryRouter = createRouter({
   list: publicQuery.query(async () => {
     const allCats = await db.select().from(categories).orderBy(asc(categories.sortOrder));
-    const root = allCats.filter(c => !c.parentId);
-    const child = allCats.filter(c => c.parentId);
-    return root.map(r => ({ ...r, children: child.filter(c => c.parentId === r.id) }));
+    const root = allCats.filter(c => c.isActive !== false && !c.parentId);
+    const children = allCats.filter(c => c.isActive !== false && c.parentId);
+    return root.map(r => ({ ...r, children: children.filter(c => c.parentId === r.id) }));
   }),
 
   create: publicQuery.input(z.object({ name: z.string(), slug: z.string(), description: z.string().optional(), image: z.string().optional(), parentId: z.number().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => {
@@ -125,9 +122,7 @@ export const categoryRouter = createRouter({
 
 export const bannerRouter = createRouter({
   list: publicQuery.query(async () => {
-    const rows = await db.select().from(bannerSlides)
-      .where(isActiveBanners())
-      .orderBy(asc(bannerSlides.sortOrder));
-    return rows.slice(0, 3);
+    const rows = await db.select().from(bannerSlides).orderBy(asc(bannerSlides.sortOrder));
+    return rows.filter(r => r.isActive !== false).slice(0, 3);
   }),
 });

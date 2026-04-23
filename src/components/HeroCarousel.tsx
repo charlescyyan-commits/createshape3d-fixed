@@ -3,8 +3,39 @@ import { Link } from 'react-router';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { trpc } from '@/providers/trpc';
 
+const fallbackSlides = [
+  {
+    id: 1,
+    title: 'CreateShape3D Washable Resin',
+    subtitle: '2025 NEW LAUNCH',
+    description: 'Professional-grade water-washable resin for 405nm LCD/DLP 3D printers. No IPA needed — just wash with water.',
+    image: '/products/resin-washable-1kg.jpg',
+    buttonText: 'Shop Now',
+    buttonLink: '/product/washable-resin-premium',
+  },
+  {
+    id: 2,
+    title: 'CS3D ProLite M4K Printer',
+    subtitle: '4K MONOCHROME LCD',
+    description: 'Desktop LCD resin 3D printer with 4K monochrome screen. XY resolution of 0.05mm, print speed up to 50mm/h.',
+    image: '/products/printer-main.jpg',
+    buttonText: 'Learn More',
+    buttonLink: '/product/prolite-m4k',
+  },
+  {
+    id: 3,
+    title: 'OEM & Bulk Orders',
+    subtitle: 'CUSTOM SOLUTIONS',
+    description: 'Private labeling, custom formulations, and wholesale partnerships for distributors worldwide.',
+    image: '/products/print-sample-1.jpg',
+    buttonText: 'Get in Touch',
+    buttonLink: '/inquiry',
+  },
+];
+
 export default function HeroCarousel() {
-  const { data: slides } = trpc.banner.list.useQuery();
+  const { data: apiSlides } = trpc.banner.list.useQuery();
+  const slides = apiSlides && apiSlides.length > 0 ? apiSlides : fallbackSlides;
   const [current, setCurrent] = useState(0);
 
   const next = useCallback(() => {
@@ -18,12 +49,10 @@ export default function HeroCarousel() {
   }, [slides]);
 
   useEffect(() => {
-    if (!slides?.length || slides.length <= 1) return;
+    if (slides.length <= 1) return;
     const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [slides, next]);
-
-  if (!slides?.length) return null;
 
   return (
     <section className="relative bg-neutral-100 overflow-hidden">

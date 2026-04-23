@@ -2,19 +2,16 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { inquiries } from "@db/schema";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export const inquiryRouter = createRouter({
   list: publicQuery
     .input(z.object({ type: z.string().optional(), isRead: z.boolean().optional() }).optional())
     .query(async ({ input }) => {
-      const conditions: any[] = [];
-      if (input?.type) conditions.push(eq(inquiries.type, input.type));
-      if (input?.isRead !== undefined) {
-        conditions.push(sql`${inquiries.isRead} = ${input.isRead ? 1 : 0}`);
-      }
-      const where = conditions.length > 0 ? and(...conditions) : undefined;
-      return db.select().from(inquiries).where(where).orderBy(desc(inquiries.createdAt));
+      let all = await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
+      if (input?.type) all = all.filter(i => i.type === input.type);
+      if (input?.isRead !== undefined) all = all.filter(i => !!i.isRead === input.isRead);
+      return all;
     }),
 
   create: publicQuery
