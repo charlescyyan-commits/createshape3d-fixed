@@ -1,18 +1,14 @@
 import { drizzle } from "drizzle-orm/mysql2";
-import { env } from "../lib/env";
+import mysql from "mysql2/promise";
 import * as schema from "@db/schema";
 import * as relations from "@db/relations";
 
-const fullSchema = { ...schema, ...relations };
+const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL,
+  connectionLimit: 10,
+});
 
-let instance: ReturnType<typeof drizzle<typeof fullSchema>>;
-
-export function getDb() {
-  if (!instance) {
-    instance = drizzle(env.databaseUrl, {
-      mode: "planetscale",
-      schema: fullSchema,
-    });
-  }
-  return instance;
-}
+export const db = drizzle(pool, {
+  schema: { ...schema, ...relations },
+  mode: "planetscale",
+});
