@@ -1,23 +1,30 @@
 import { Link, useSearchParams } from 'react-router';
 import { trpc } from '@/providers/trpc';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShoppingCart } from 'lucide-react';
+import { toast } from 'sonner';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductList() {
   const [searchParams] = useSearchParams();
   const categorySlug = searchParams.get('category') || undefined;
   const search = searchParams.get('search') || undefined;
+  const { addItem } = useCart();
 
   const { data: products, isLoading } = trpc.product.list.useQuery({
     categorySlug: categorySlug || undefined,
     search: search || undefined,
   });
-
   const { data: categories } = trpc.category.list.useQuery();
   const activeCat = categories?.find(c => c.slug === categorySlug);
 
+  const handleQuickAdd = (product: any) => {
+    const price = parseFloat(String(product.basePrice || 0));
+    addItem({ productId: product.id, productName: product.name, productImage: product.mainImage || '', variantId: null, variantLabel: '', price, quantity: 1 });
+    toast.success(`${product.name} added to cart`);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
       <nav className="text-xs text-neutral-500 mb-6">
         <Link to="/" className="hover:text-neutral-900">Home</Link>
         <span className="mx-2">/</span>
@@ -31,31 +38,28 @@ export default function ProductList() {
       </nav>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
         <aside className="lg:w-56 flex-shrink-0">
           <h2 className="font-semibold text-sm mb-4">Categories</h2>
           <ul className="space-y-1">
-            <li>
-              <Link to="/products" className={`block text-sm py-1.5 px-3 rounded-lg ${!categorySlug ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}>
-                All Products
-              </Link>
-            </li>
-            {categories?.map(cat => (
+            <li><Link to="/products" className={`block text-sm py-1.5 px-3 rounded-lg ${!categorySlug ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}>All Products</Link></li>
+            {categories?.filter(c => !c.parentId).map(cat => (
               <li key={cat.id}>
-                <Link to={`/products?category=${cat.slug}`} className={`block text-sm py-1.5 px-3 rounded-lg ${categorySlug === cat.slug ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}>
-                  {cat.name}
-                </Link>
+                <Link to={`/products?category=${cat.slug}`} className={`block text-sm py-1.5 px-3 rounded-lg ${categorySlug === cat.slug ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}>{cat.name}</Link>
+                {cat.children && cat.children.length > 0 && (
+                  <ul className="pl-3 mt-1 space-y-0.5">
+                    {cat.children.map((sub: any) => (
+                      <li key={sub.id}><Link to={`/products?category=${sub.slug}`} className={`block text-xs py-1 px-3 rounded-lg ${categorySlug === sub.slug ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-500 hover:bg-neutral-50'}`}>{sub.name}</Link></li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
         </aside>
 
-        {/* Product Grid */}
         <div className="flex-1">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold">
-              {activeCat ? activeCat.name : search ? `Search: "${search}"` : 'All Products'}
-            </h1>
+            <h1 className="text-xl font-bold">{activeCat ? activeCat.name : search ? `Search: "${search}"` : 'All Products'}</h1>
             <span className="text-sm text-neutral-500">{products?.length || 0} products</span>
           </div>
 
@@ -64,39 +68,40 @@ export default function ProductList() {
               <Loader2 className="w-8 h-8 animate-spin text-neutral-400" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {products?.map(product => (
-                <Link key={product.id} to={`/product/${product.slug}`} className="group">
-                  <div className="bg-neutral-50 rounded-xl overflow-hidden mb-3 relative">
+                <div key={product.id} className="group">
+                  <div className="relative bg-neutral-50 rounded-xl overflow-hidden aspect-square mb-3">
+                    <Link to={`/product/${product.slug}`}>
+                      <img
+                        src={product.mainImage || '/products/resin-washable-1kg.jpg'}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </Link>
                     {product.badge && (
-                      <span className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">{product.badge}</span>
+                      <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">{product.badge}</span>
                     )}
-                    <img
-                      src={product.mainImage || '/products/resin-washable-1kg.jpg'}
-                      alt={product.name}
-                      className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {/* Hover Add to Cart */}
+                    <button
+                      onClick={() => handleQuickAdd(product)}
+                      className="absolute bottom-2 right-2 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white"
+                      title="Add to cart"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="px-1">
-                    <p className="text-xs text-neutral-500 mb-0.5">{product.brand}</p>
-                    <h3 className="text-sm font-semibold mb-1 group-hover:text-neutral-600 transition-colors line-clamp-1">{product.name}</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold">${product.basePrice}</span>
-                      {product.compareAtPrice && (
-                        <span className="text-xs text-neutral-400 line-through">${product.compareAtPrice}</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-1 line-clamp-1">{product.shortDesc}</p>
-                  </div>
-                </Link>
+                  {/* Only product name below image */}
+                  <Link to={`/product/${product.slug}`}>
+                    <h3 className="text-sm font-semibold text-center group-hover:text-neutral-600 transition-colors line-clamp-1">{product.name}</h3>
+                  </Link>
+                </div>
               ))}
             </div>
           )}
 
           {products?.length === 0 && !isLoading && (
-            <div className="text-center py-16 text-neutral-400">
-              No products found.
-            </div>
+            <div className="text-center py-16 text-neutral-400">No products found.</div>
           )}
         </div>
       </div>

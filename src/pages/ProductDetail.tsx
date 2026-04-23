@@ -13,7 +13,7 @@ export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading } = trpc.product.bySlug.useQuery(slug || '');
   const { addItem } = useCart();
-  const [selectedImg, setSelectedImg] = useState(0);
+  const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -61,6 +61,8 @@ export default function ProductDetail() {
   if (isLoading) return <div className="max-w-7xl mx-auto px-4 py-16 text-center text-neutral-400">Loading...</div>;
   if (!product) return <div className="max-w-7xl mx-auto px-4 py-16 text-center">Product not found</div>;
 
+  const allImages = images.length > 0 ? images : [{ url: product.mainImage || '', alt: product.name, isPrimary: true }];
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <nav className="text-xs text-neutral-500 mb-6">
@@ -69,22 +71,34 @@ export default function ProductDetail() {
         <span className="text-neutral-900">{product.name}</span>
       </nav>
 
+      {/* Main Product */}
       <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
-        <div>
-          <div className="bg-neutral-50 rounded-xl overflow-hidden mb-4">
-            <img src={images[selectedImg]?.url || product.mainImage || ''} alt={product.name} className="w-full aspect-square object-cover" />
+        {/* Gallery - Left vertical thumbnails + Right main image */}
+        <div className="flex gap-3">
+          {/* Vertical thumbnails on left */}
+          <div className="flex flex-col gap-2 w-20 flex-shrink-0">
+            {allImages.map((img: any, i: number) => (
+              <button
+                key={i}
+                onMouseEnter={() => setActiveImage(i)}
+                onClick={() => setActiveImage(i)}
+                className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${activeImage === i ? 'border-neutral-900 ring-2 ring-neutral-900/20' : 'border-neutral-200 hover:border-neutral-400'}`}
+              >
+                <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
+              </button>
+            ))}
           </div>
-          {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {images.map((img: any, i: number) => (
-                <button key={i} onClick={() => setSelectedImg(i)} className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${selectedImg === i ? 'border-neutral-900' : 'border-transparent'}`}>
-                  <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Main image on right */}
+          <div className="flex-1 bg-neutral-50 rounded-xl overflow-hidden">
+            <img
+              src={allImages[activeImage]?.url || product.mainImage || ''}
+              alt={product.name}
+              className="w-full aspect-square object-cover"
+            />
+          </div>
         </div>
 
+        {/* Product Info */}
         <div>
           {product.tagline && <p className="text-xs font-semibold tracking-widest text-neutral-500 mb-2">{product.tagline}</p>}
           <h1 className="text-2xl lg:text-3xl font-bold mb-2">{product.name}</h1>

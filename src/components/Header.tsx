@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { trpc } from '@/providers/trpc';
 
 interface MenuItem {
   label: string;
@@ -55,6 +56,8 @@ export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { totalCount } = useCart();
+  const { data: settings } = trpc.setting.list.useQuery();
+  const getSetting = (key: string) => settings?.find(s => s.key === key)?.value;
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 20);
@@ -64,56 +67,40 @@ export default function Header() {
 
   return (
     <header className={`sticky top-0 z-50 bg-white border-b border-neutral-200 transition-shadow ${scrolled ? 'shadow-sm' : ''}`}>
-      {/* Announcement Bar */}
       <div className="bg-neutral-900 text-white text-[11px] text-center py-1.5 tracking-wider">
         Free shipping on orders over $99 | Premium 3D Printing Solutions
       </div>
-
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo placeholder - reads from site_settings or shows text */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
-              <span className="text-white text-xs font-bold">CS</span>
-            </div>
-            <span className="text-lg font-bold tracking-tight hidden sm:block">CreateShape3D</span>
+            {getSetting('site_logo') ? (
+              <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
+            ) : (
+              <>
+                <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">CS</span>
+                </div>
+                <span className="text-lg font-bold tracking-tight hidden sm:block">CreateShape3D</span>
+              </>
+            )}
           </Link>
 
           {/* Desktop Nav with Dropdown */}
           <nav className="hidden lg:flex items-center gap-1">
             {menuItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.children && setActiveDropdown(item.label)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
+              <div key={item.label} className="relative" onMouseEnter={() => item.children && setActiveDropdown(item.label)} onMouseLeave={() => setActiveDropdown(null)}>
                 {item.href ? (
-                  <Link
-                    to={item.href}
-                    className="px-4 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1"
-                  >
-                    {item.label}
-                  </Link>
+                  <Link to={item.href} className="px-4 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1">{item.label}</Link>
                 ) : (
                   <button className="px-4 py-2 text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1 cursor-pointer">
-                    {item.label}
-                    {item.children && <ChevronDown className="w-3 h-3" />}
+                    {item.label}{item.children && <ChevronDown className="w-3 h-3" />}
                   </button>
                 )}
-
-                {/* Dropdown */}
                 {item.children && activeDropdown === item.label && (
                   <div className="absolute top-full left-0 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 min-w-[220px] z-50">
                     {item.children.map((child) => (
-                      <Link
-                        key={child.label}
-                        to={child.href || '#'}
-                        className="block px-4 py-2.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors"
-                        onClick={() => setActiveDropdown(null)}
-                      >
-                        {child.label}
-                      </Link>
+                      <Link key={child.label} to={child.href || '#'} className="block px-4 py-2.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => setActiveDropdown(null)}>{child.label}</Link>
                     ))}
                   </div>
                 )}
@@ -141,7 +128,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Search bar */}
         {searchOpen && (
           <div className="pb-3">
             <form onSubmit={e => { e.preventDefault(); if (searchQuery.trim()) window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`; }} className="flex gap-2">
@@ -152,7 +138,6 @@ export default function Header() {
         )}
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="lg:hidden bg-white border-t border-neutral-200 px-4 py-4 max-h-[70vh] overflow-auto">
           {menuItems.map((item) => (

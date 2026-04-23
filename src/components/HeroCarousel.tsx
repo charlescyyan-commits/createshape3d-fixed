@@ -54,7 +54,6 @@ export default function HeroCarousel() {
           </div>
         ))}
 
-        {/* Arrows */}
         {slides.length > 1 && (
           <>
             <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -63,7 +62,6 @@ export default function HeroCarousel() {
             <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
               <ChevronRight className="w-5 h-5 text-white" />
             </button>
-            {/* Dots */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
               {slides.map((_, i) => (
                 <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/40'}`} />
