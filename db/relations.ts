@@ -1,14 +1,10 @@
 import { relations } from "drizzle-orm";
-import { products, productImages, productVariants, variantAttributeOptions, categories, bannerSlides } from "./schema";
+import { products, productImages, productVariants, variantAttributeOptions } from "./schema";
 
-export const categoriesRelations = relations(categories, ({ one, many }) => ({
-  parent: one(categories, { fields: [categories.parentId], references: [categories.id] }),
-  children: many(categories),
-  products: many(products),
-}));
+// NOTE: Self-referencing relations on categories removed due to Drizzle ORM 
+// "multiple relations" error with TiDB. Categories fetched via simple queries instead.
 
-export const productsRelations = relations(products, ({ one, many }) => ({
-  category: one(categories, { fields: [products.categoryId], references: [categories.id] }),
+export const productsRelations = relations(products, ({ many }) => ({
   images: many(productImages),
   variants: many(productVariants),
   attributeOptions: many(variantAttributeOptions),
@@ -25,5 +21,3 @@ export const variantOptionsRelations = relations(variantAttributeOptions, ({ one
 export const productVariantsRelations = relations(productVariants, ({ one }) => ({
   product: one(products, { fields: [productVariants.productId], references: [products.id] }),
 }));
-
-export const bannerSlidesRelations = relations(bannerSlides, ({}) => ({}));
