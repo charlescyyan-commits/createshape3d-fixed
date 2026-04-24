@@ -136,8 +136,11 @@ export default function Header() {
   }, []);
 
   const getFilteredProducts = (item: MenuItem) => {
-    // Always show ALL products for this category, not just the active subcategory
-    return item.products || [];
+    if (!item.products || !activeSubCategory) return item.products || [];
+    // Show ALL products for this category, with the active subcategory's products first
+    const activeProducts = item.products.filter(p => p.subCategory === activeSubCategory);
+    const otherProducts = item.products.filter(p => p.subCategory !== activeSubCategory);
+    return [...activeProducts, ...otherProducts];
   };
 
   const getActiveSubLabel = (item: MenuItem) => {
@@ -202,7 +205,7 @@ export default function Header() {
                   {hasMegaMenu && activeDropdown === item.label && (
                     <div
                       className="fixed left-0 right-0 bg-white border-b border-neutral-200 shadow-2xl"
-                      style={{ top: 'calc(4rem + 2px)', zIndex: 9999 }}
+                      style={{ top: 'calc(6rem + 2px)', zIndex: 9999 }}
                       onMouseEnter={clearTimer}
                       onMouseLeave={() => delayedClose(250)}
                     >
