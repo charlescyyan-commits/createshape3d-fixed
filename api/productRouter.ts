@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { products, productImages, productVariants, variantAttributeOptions, categories, bannerSlides } from "@db/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 
 export const productRouter = createRouter({
   list: publicQuery
@@ -19,9 +19,8 @@ export const productRouter = createRouter({
         if (catRows.length > 0) categoryId = catRows[0].id;
       }
 
-      // Fetch all products (no boolean where clauses to avoid Drizzle bug), filter in JS
       const allProducts = await db.select().from(products).orderBy(asc(products.sortOrder));
-      let filtered = allProducts.filter(p => p.isActive);
+      let filtered = allProducts.filter(p => p.isActive !== false);
 
       if (categoryId) filtered = filtered.filter(p => p.categoryId === categoryId);
       if (input?.search) filtered = filtered.filter(p => p.name.toLowerCase().includes((input.search || '').toLowerCase()));
@@ -57,7 +56,7 @@ export const productRouter = createRouter({
     return { ...product, images: imgs, variants, attributeOptions: attrOpts, category: cat };
   }),
 
-  create: publicQuery.input(z.object({
+  create: adminQuery.input(z.object({
     name: z.string(), slug: z.string(), subtitle: z.string().optional(),
     description: z.string().optional(), shortDesc: z.string().optional(),
     tagline: z.string().optional(), categoryId: z.number().optional(),
@@ -72,20 +71,56 @@ export const productRouter = createRouter({
     oemPerksJson: z.string().optional(), ctaTitle: z.string().optional(),
     ctaDesc: z.string().optional(), ctaBtn: z.string().optional(),
     sortOrder: z.number().optional(), isFeatured: z.boolean().optional(),
-    isActive: z.boolean().optional(),
+    isActive: z.boolean().optional(), images: z.array(z.string()).optional(),
   })).mutation(async ({ input }) => {
-    const [{ id }] = await db.insert(products).values(input).$returningId();
-    const rows = await db.select().from(products).where(eq(products.id, id)).limit(1);
-    return rows[0];
+    const { images, ...productData } = input;
+    await db.insert(products).values(productData);
+    const rows = await db.select().from(products).where(eq(products.slug, productData.slug)).limit(1);
+    const product = rows[0];
+    
+    if (images && images.length > 0 && product) {
+      await db.insert(productImages).values(
+        images.map((url, idx) => ({
+          productId: product.id,
+          url,
+          alt: product.name,
+          isPrimary: idx === 0,
+          sortOrder: idx,
+        }))
+      );
+    }
+    
+    return product;
   }),
 
-  update: publicQuery.input(z.object({ id: z.number(), data: z.any() })).mutation(async ({ input }) => {
-    await db.update(products).set(input.data).where(eq(products.id, input.id));
+  update: adminQuery.input(z.object({ id: z.number(), data: z.any() })).mutation(async ({ input }) => {
+    const { images, ...productData } = input.data || {};
+    await db.update(products).set(productData).where(eq(products.id, input.id));
+    
+    if (images && Array.isArray(images)) {
+      await db.delete(productImages).where(eq(productImages.productId, input.id));
+      if (images.length > 0) {
+        const rows = await db.select().from(products).where(eq(products.id, input.id)).limit(1);
+        const product = rows[0];
+        if (product) {
+          await db.insert(productImages).values(
+            images.map((url: string, idx: number) => ({
+              productId: input.id,
+              url,
+              alt: product.name,
+              isPrimary: idx === 0,
+              sortOrder: idx,
+            }))
+          );
+        }
+      }
+    }
+    
     const rows = await db.select().from(products).where(eq(products.id, input.id)).limit(1);
     return rows[0];
   }),
 
-  delete: publicQuery.input(z.number()).mutation(async ({ input }) => {
+  delete: adminQuery.input(z.number()).mutation(async ({ input }) => {
     await db.delete(productVariants).where(eq(productVariants.productId, input));
     await db.delete(variantAttributeOptions).where(eq(variantAttributeOptions.productId, input));
     await db.delete(productImages).where(eq(productImages.productId, input));
@@ -102,19 +137,19 @@ export const categoryRouter = createRouter({
     return root.map(r => ({ ...r, children: children.filter(c => c.parentId === r.id) }));
   }),
 
-  create: publicQuery.input(z.object({ name: z.string(), slug: z.string(), description: z.string().optional(), image: z.string().optional(), parentId: z.number().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => {
-    const [{ id }] = await db.insert(categories).values(input).$returningId();
-    const rows = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  create: adminQuery.input(z.object({ name: z.string(), slug: z.string(), description: z.string().optional(), image: z.string().optional(), parentId: z.number().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => {
+    await db.insert(categories).values(input);
+    const rows = await db.select().from(categories).where(eq(categories.slug, input.slug)).limit(1);
     return rows[0];
   }),
 
-  update: publicQuery.input(z.object({ id: z.number(), data: z.any() })).mutation(async ({ input }) => {
+  update: adminQuery.input(z.object({ id: z.number(), data: z.any() })).mutation(async ({ input }) => {
     await db.update(categories).set(input.data).where(eq(categories.id, input.id));
     const rows = await db.select().from(categories).where(eq(categories.id, input.id)).limit(1);
     return rows[0];
   }),
 
-  delete: publicQuery.input(z.number()).mutation(async ({ input }) => {
+  delete: adminQuery.input(z.number()).mutation(async ({ input }) => {
     await db.delete(categories).where(eq(categories.id, input));
     return { success: true };
   }),

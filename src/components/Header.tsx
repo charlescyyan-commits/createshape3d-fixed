@@ -106,7 +106,7 @@ export default function Header() {
     }
   };
 
-  const delayedClose = (ms = 250) => {
+  const delayedClose = (ms = 120) => {
     clearTimer();
     timerRef.current = setTimeout(() => {
       setActiveDropdown(null);
@@ -204,10 +204,10 @@ export default function Header() {
                   {/* Mega Menu */}
                   {hasMegaMenu && activeDropdown === item.label && (
                     <div
-                      className="fixed left-0 right-0 bg-white border-b border-neutral-200 shadow-2xl"
+                      className="fixed left-0 right-0 bg-white border-b border-neutral-200 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200"
                       style={{ top: 'calc(6rem + 2px)', zIndex: 9999 }}
                       onMouseEnter={clearTimer}
-                      onMouseLeave={() => delayedClose(250)}
+                      onMouseLeave={() => delayedClose(120)}
                     >
                       <div className="max-w-7xl mx-auto px-4 py-6">
                         <div className="flex gap-8">
@@ -270,9 +270,9 @@ export default function Header() {
                   {/* Simple dropdown for Support */}
                   {item.children && !item.products && activeDropdown === item.label && (
                     <div
-                      className="absolute top-full left-0 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 min-w-[200px] z-50"
+                      className="absolute top-full left-0 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 min-w-[200px] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
                       onMouseEnter={clearTimer}
-                      onMouseLeave={() => delayedClose(200)}
+                      onMouseLeave={() => delayedClose(120)}
                     >
                       {item.children.map((child) => (
                         <Link key={child.label} to={child.href} className="block px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-colors" onClick={() => delayedClose(0)}>

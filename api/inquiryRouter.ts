@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { inquiries } from "@db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export const inquiryRouter = createRouter({
-  list: publicQuery
+  list: adminQuery
     .input(z.object({ type: z.string().optional(), isRead: z.boolean().optional() }).optional())
     .query(async ({ input }) => {
       let all = await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
@@ -22,19 +22,19 @@ export const inquiryRouter = createRouter({
       productIds: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      const [{ id }] = await db.insert(inquiries).values(input).$returningId();
-      const rows = await db.select().from(inquiries).where(eq(inquiries.id, id)).limit(1);
+      await db.insert(inquiries).values(input);
+      const rows = await db.select().from(inquiries).orderBy(desc(inquiries.createdAt)).limit(1);
       return rows[0];
     }),
 
-  markRead: publicQuery
+  markRead: adminQuery
     .input(z.number())
     .mutation(async ({ input }) => {
       await db.update(inquiries).set({ isRead: true }).where(eq(inquiries.id, input));
       return { success: true };
     }),
 
-  delete: publicQuery
+  delete: adminQuery
     .input(z.number())
     .mutation(async ({ input }) => {
       await db.delete(inquiries).where(eq(inquiries.id, input));
