@@ -1,10 +1,11 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { LayoutDashboard, Package, FolderOpen, MessageSquare, Settings, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Package, FolderOpen, MessageSquare, Settings, FileText, ArrowLeft } from 'lucide-react';
 
 const nav = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/products', label: 'Products', icon: Package },
   { path: '/admin/categories', label: 'Categories', icon: FolderOpen },
+  { path: '/admin/pages', label: 'CMS Pages', icon: FileText },
   { path: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
 ];

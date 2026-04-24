@@ -4,6 +4,7 @@ import { inquiryRouter } from "./inquiryRouter";
 import { settingRouter } from "./settingRouter";
 import { cartRouter } from "./cartRouter";
 import { authRouter } from "./auth-router";
+import { pageRouter } from "./pageRouter";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -14,6 +15,5 @@ export const appRouter = createRouter({
   setting: settingRouter,
   cart: cartRouter,
   auth: authRouter,
+  page: pageRouter,
 });
-
-export type AppRouter = typeof appRouter;

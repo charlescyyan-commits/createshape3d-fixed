@@ -19,6 +19,8 @@ import ResinProduct from './pages/ResinProduct'
 import MonoLCDProduct from './pages/MonoLCDProduct'
 import SupportPage from './pages/SupportPage'
 import BlogPage from './pages/BlogPage'
+import CmsPage from './pages/CmsPage'
+import AdminPages from './pages/admin/AdminPages'
 
 export default function App() {
   return (
@@ -37,6 +39,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/page/:slug" element={<CmsPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
@@ -44,6 +47,7 @@ export default function App() {
           <Route path="categories" element={<AdminCategories />} />
           <Route path="inquiries" element={<AdminInquiries />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="pages" element={<AdminPages />} />
         </Route>
       </Routes>
     </CartProvider>

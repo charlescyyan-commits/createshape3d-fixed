@@ -132,7 +132,7 @@ export default function ResinProduct() {
 
               {/* Price */}
               <div className="flex items-baseline gap-4 mb-6 pb-6 border-b border-neutral-100">
-                <span className="text-4xl lg:text-[2.625rem] font-extrabold text-blue-600 tracking-tight">{priceMap[selectedSize]}</span>
+                <span className="text-4xl lg:text-[2.625rem] font-extrabold text-neutral-900 tracking-tight">{priceMap[selectedSize]}</span>
                 <span className="text-xl text-neutral-400 line-through font-medium">{origMap[selectedSize]}</span>
                 <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3.5 py-1.5 rounded-full">SAVE {selectedSize === 3 ? '$134' : selectedSize === 2 ? '$50' : selectedSize === 1 ? '$24' : '$14'}</span>
               </div>

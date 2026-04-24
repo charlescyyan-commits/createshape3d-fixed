@@ -117,6 +117,18 @@ export const siteSettings = mysqlTable("site_settings", {
   groupName: varchar("group_name", { length: 100 }).default("general"),
 });
 
+export const pages = mysqlTable("pages", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  content: text("content"),
+  metaDescription: text("meta_description"),
+  isActive: boolean("is_active").default(true),
+  sortOrder: int("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type Category = typeof categories.$inferSelect;
 export type BannerSlide = typeof bannerSlides.$inferSelect;
 export type Product = typeof products.$inferSelect;
@@ -125,3 +137,4 @@ export type ProductVariant = typeof productVariants.$inferSelect;
 export type VariantAttributeOption = typeof variantAttributeOptions.$inferSelect;
 export type Inquiry = typeof inquiries.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
+export type Page = typeof pages.$inferSelect;
