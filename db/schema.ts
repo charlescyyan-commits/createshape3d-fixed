@@ -1,5 +1,14 @@
 import { mysqlTable, serial, varchar, text, int, boolean, timestamp, decimal } from "drizzle-orm/mysql-core";
 
+export const users = mysqlTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }),
+  role: varchar("role", { length: 50 }).default("user").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const categories = mysqlTable("categories", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -129,6 +138,7 @@ export const pages = mysqlTable("pages", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export type User = typeof users.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type BannerSlide = typeof bannerSlides.$inferSelect;
 export type Product = typeof products.$inferSelect;
