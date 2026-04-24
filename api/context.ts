@@ -4,9 +4,6 @@ import { findUserByUnionId } from "./queries/users";
 import { verifyEmailToken } from "./auth-router";
 import * as cookie from "cookie";
 import { Session } from "@contracts/constants";
-import { db } from "./queries/connection";
-import { users } from "@db/schema";
-import { eq } from "drizzle-orm";
 
 export const createContext = async (opts: { req: Request; resHeaders: Headers }): Promise<TrpcContext> => {
   try {
@@ -29,10 +26,20 @@ export const createContext = async (opts: { req: Request; resHeaders: Headers })
     if (emailToken) {
       const claim = await verifyEmailToken(emailToken);
       if (claim) {
-        const rows = await db.select().from(users).where(eq(users.id, claim.userId)).limit(1);
-        if (rows.length > 0) {
-          const u = rows[0];
-          return { req: opts.req, resHeaders: opts.resHeaders, user: { id: u.id, name: u.name || u.email, email: u.email, role: u.role } };
+        try {
+          const { getDb } = await import("./queries/connection");
+          const db = getDb();
+          if (db) {
+            const { users } = await import("@db/schema");
+            const { eq } = await import("drizzle-orm");
+            const rows = await db.select().from(users).where(eq(users.id, claim.userId)).limit(1);
+            if (rows.length > 0) {
+              const u = rows[0];
+              return { req: opts.req, resHeaders: opts.resHeaders, user: { id: u.id, name: u.name || u.email, email: u.email, role: u.role } };
+            }
+          }
+        } catch (dbErr) {
+          // Database not available, skip email auth
         }
       }
     }
