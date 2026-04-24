@@ -241,7 +241,7 @@ export default function Header() {
                                 {getActiveSubLabel(item) || 'All Products'}
                               </h3>
                             </div>
-                            <div className="grid grid-cols-3 lg:grid-cols-5 gap-5">
+                            <div className="grid grid-cols-3 gap-6">
                               {getFilteredProducts(item).map((product) => (
                                 <Link
                                   key={product.name}

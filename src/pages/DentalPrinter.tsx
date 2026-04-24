@@ -64,44 +64,46 @@ export default function DentalPrinter() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* LEFT: Image Gallery */}
-          <div className="flex gap-4">
-            {/* Thumbnails */}
-            <div className="flex flex-col gap-2.5 w-16 lg:w-[72px] flex-shrink-0">
-              {productImages.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedImage(i)}
-                  className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600' : 'border-neutral-200 hover:border-neutral-400'}`}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </button>
+          <div>
+            {/* Award badges - moved above the image */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {awardBadges.map((badge, i) => (
+                <div key={i} className="bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow-sm">
+                  <div className="text-[10px] font-bold uppercase tracking-wider">{badge.label}</div>
+                  {badge.sub && <div className="text-[9px] font-semibold opacity-90">{badge.sub}</div>}
+                  {badge.year && <div className="text-[9px] opacity-70">{badge.year}</div>}
+                </div>
               ))}
             </div>
-            {/* Main Image */}
-            <div className="flex-1 relative">
-              <div className="bg-neutral-50 rounded-2xl overflow-hidden aspect-square flex items-center justify-center relative group">
-                {/* Award badges */}
-                <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                  {awardBadges.map((badge, i) => (
-                    <div key={i} className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg">
-                      <div className="text-[10px] font-bold uppercase tracking-wider">{badge.label}</div>
-                      {badge.sub && <div className="text-[10px] font-semibold">{badge.sub}</div>}
-                      {badge.year && <div className="text-[9px] opacity-70">{badge.year}</div>}
-                    </div>
-                  ))}
+            <div className="flex gap-3">
+              {/* Thumbnails - flex-1 to evenly distribute height matching main image */}
+              <div className="flex flex-col gap-2 w-16 lg:w-[72px] flex-shrink-0">
+                {productImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    className={`flex-1 min-h-0 rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600' : 'border-neutral-200 hover:border-neutral-400'}`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+              {/* Main Image */}
+              <div className="flex-1 relative">
+                <div className="bg-neutral-50 rounded-2xl overflow-hidden aspect-square flex items-center justify-center relative group">
+                  <img
+                    src={productImages[selectedImage]}
+                    alt="Dental Stellar D100"
+                    className="max-w-full max-h-full object-contain p-6 transition-opacity duration-300"
+                  />
+                  {/* Nav arrows */}
+                  <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
-                <img
-                  src={productImages[selectedImage]}
-                  alt="Dental Stellar D100"
-                  className="max-w-full max-h-full object-contain p-6 transition-opacity duration-300"
-                />
-                {/* Nav arrows */}
-                <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
-                  <ChevronRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
           </div>

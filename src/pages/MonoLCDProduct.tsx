@@ -104,15 +104,15 @@ export default function MonoLCDProduct() {
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-indigo-600 shadow-[0_0_0_3px_rgba(79,70,229,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
+                    className={`flex-1 min-h-0 rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600 shadow-[0_0_0_3px_rgba(37,99,235,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
               <div className="flex-1">
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden aspect-square flex items-center justify-center group">
-                  <span className="absolute top-4 left-4 bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full z-10">4K MONO</span>
+                <div className="bg-white rounded-3xl shadow-xl overflow-hidden aspect-square flex items-center justify-center group relative">
+                  <span className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full z-10">4K MONO</span>
                   <img src={productImages[selectedImage]} alt="Mono LCD Screen" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
                 </div>
               </div>

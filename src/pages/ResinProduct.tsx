@@ -79,13 +79,13 @@ export default function ResinProduct() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             {/* LEFT: Gallery */}
             <div className="flex gap-4">
-              {/* Thumbnails */}
+              {/* Thumbnails - flex-1 evenly distributes to match main image height */}
               <div className="flex flex-col gap-3 w-16 lg:w-20 flex-shrink-0">
                 {productImages.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600 shadow-[0_0_0_3px_rgba(37,99,235,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
+                    className={`flex-1 min-h-0 rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600 shadow-[0_0_0_3px_rgba(37,99,235,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
