@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Pencil, Trash2, Search, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/providers/trpc';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function AdminProducts() {
   const [search, setSearch] = useState('');
@@ -77,12 +78,35 @@ export default function AdminProducts() {
               <button onClick={() => setEditing(0)} className="p-1 hover:bg-neutral-100 rounded"><X className="w-5 h-5" /></button>
             </div>
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              {['name','slug','tagline','badge','brand','sku','basePrice','compareAtPrice','mainImage'].map(field => (
-                <div key={field} className={field === 'mainImage' ? 'sm:col-span-2' : ''}>
+              {['name','slug','tagline','badge','brand','sku','basePrice','compareAtPrice'].map(field => (
+                <div key={field}>
                   <label className="text-xs font-medium text-neutral-500 mb-1 block capitalize">{field}</label>
                   <input value={editForm[field] || ''} onChange={e => setEditForm({ ...editForm, [field]: e.target.value })} className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-neutral-900" />
                 </div>
               ))}
+              <div className="sm:col-span-2">
+                <label className="text-xs font-medium text-neutral-500 mb-1 block">Product Image</label>
+                <div className="flex gap-4">
+                  <div className="w-40">
+                    <ImageUpload
+                      value={editForm.mainImage || ''}
+                      onChange={(url) => setEditForm({ ...editForm, mainImage: url })}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs font-medium text-neutral-500 mb-1 block">Or paste image URL</label>
+                    <input
+                      value={editForm.mainImage || ''}
+                      onChange={e => setEditForm({ ...editForm, mainImage: e.target.value })}
+                      placeholder="/products/example.jpg or /uploads/xxx.jpg"
+                      className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-neutral-900"
+                    />
+                    {editForm.mainImage && (
+                      <p className="text-xs text-neutral-400 mt-1">{editForm.mainImage}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div>
                 <label className="text-xs font-medium text-neutral-500 mb-1 block">Category</label>
                 <select value={editForm.categoryId || ''} onChange={e => setEditForm({ ...editForm, categoryId: e.target.value })} className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-neutral-900">
