@@ -171,9 +171,10 @@ export default function AdminProducts() {
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium text-neutral-500 mb-1 block">
                   Full Description
-                  <span className="text-neutral-400 font-normal ml-1">— Detailed product description (HTML supported)</span>
+                  <span className="text-neutral-400 font-normal ml-1">— HTML code is fully supported. Paste HTML directly for rich formatting, images, and embedded content.</span>
                 </label>
-                <textarea value={editForm.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows={4} className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-neutral-900 resize-none" />
+                <textarea value={editForm.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows={6} placeholder="<h2>Product Overview</h2><p>Your product description here...</p><img src='/products/detail-1.jpg' />" className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-neutral-900 resize-none font-mono" />
+                <p className="text-[11px] text-neutral-400 mt-1">Tip: You can use any HTML tags — h1-h6, p, img, ul/li, div, iframe, etc. The code will render exactly as written on the product page.</p>
               </div>
             </div>
             <div className="flex gap-2">

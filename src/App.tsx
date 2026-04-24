@@ -21,6 +21,7 @@ import SupportPage from './pages/SupportPage'
 import BlogPage from './pages/BlogPage'
 import CmsPage from './pages/CmsPage'
 import AdminPages from './pages/admin/AdminPages'
+import AdminBanners from './pages/admin/AdminBanners'
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="categories" element={<AdminCategories />} />
+          <Route path="banners" element={<AdminBanners />} />
           <Route path="inquiries" element={<AdminInquiries />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="pages" element={<AdminPages />} />

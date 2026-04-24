@@ -158,6 +158,12 @@ export default function ProductDetail() {
           <button onClick={() => setShowSpecs(!showSpecs)} className="w-full text-sm font-medium text-neutral-600 border border-neutral-300 rounded-lg py-3 hover:bg-neutral-50 transition-colors mb-4">
             {showSpecs ? 'Hide' : 'View'} Specifications
           </button>
+          {product.description && (
+            <div className="mb-4 bg-white border border-neutral-100 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-2 text-neutral-700">Product Description</h3>
+              <div className="text-sm text-neutral-600 leading-relaxed max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
+            </div>
+          )}
           <p className="text-xs text-neutral-400">{product.shortDesc}</p>
         </div>
       </div>

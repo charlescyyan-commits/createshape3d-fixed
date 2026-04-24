@@ -160,4 +160,34 @@ export const bannerRouter = createRouter({
     const rows = await db.select().from(bannerSlides).orderBy(asc(bannerSlides.sortOrder));
     return rows.filter(r => r.isActive !== false).slice(0, 3);
   }),
+
+  adminList: adminQuery.query(async () => {
+    return db.select().from(bannerSlides).orderBy(asc(bannerSlides.sortOrder));
+  }),
+
+  create: adminQuery.input(z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    image: z.string(),
+    buttonText: z.string().optional(),
+    buttonLink: z.string().optional(),
+    sortOrder: z.number().optional(),
+    isActive: z.boolean().optional(),
+  })).mutation(async ({ input }) => {
+    await db.insert(bannerSlides).values(input);
+    const rows = await db.select().from(bannerSlides).orderBy(desc(bannerSlides.id)).limit(1);
+    return rows[0];
+  }),
+
+  update: adminQuery.input(z.object({ id: z.number(), data: z.any() })).mutation(async ({ input }) => {
+    await db.update(bannerSlides).set(input.data).where(eq(bannerSlides.id, input.id));
+    const rows = await db.select().from(bannerSlides).where(eq(bannerSlides.id, input.id)).limit(1);
+    return rows[0];
+  }),
+
+  delete: adminQuery.input(z.number()).mutation(async ({ input }) => {
+    await db.delete(bannerSlides).where(eq(bannerSlides.id, input));
+    return { success: true };
+  }),
 });
