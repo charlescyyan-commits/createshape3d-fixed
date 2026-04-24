@@ -149,8 +149,8 @@ export default function Header() {
 
   return (
     <header className={`sticky top-0 z-50 bg-white border-b border-neutral-200 transition-shadow ${scrolled ? 'shadow-sm' : ''}`}>
-      <div className="bg-neutral-900 text-white text-[11px] text-center py-1.5 tracking-wider">
-        Free shipping on orders over $99 | Premium 3D Printing Solutions
+      <div className="bg-[#0a1628] text-blue-200 text-[11px] text-center py-2 tracking-wider border-b border-blue-900/30">
+        Free shipping on orders over $99 · 10+ Years of Manufacturing Excellence · Ships Worldwide
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative">
@@ -161,7 +161,7 @@ export default function Header() {
               <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
             ) : (
               <>
-                <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white text-xs font-bold">CS</span>
                 </div>
                 <span className="text-lg font-bold tracking-tight hidden sm:block">CreateShape3D</span>

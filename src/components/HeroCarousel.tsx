@@ -1,103 +1,130 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { trpc } from '@/providers/trpc';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
-const fallbackSlides = [
+const slides = [
   {
     id: 1,
-    title: 'CreateShape3D Washable Resin',
-    subtitle: '2025 NEW LAUNCH',
-    description: 'Professional-grade water-washable resin for 405nm LCD/DLP 3D printers. No IPA needed — just wash with water.',
-    image: '/products/resin-washable-1kg.jpg',
-    buttonText: 'Shop Now',
-    buttonLink: '/product/washable-resin-premium',
+    title: 'Precision 3D Printing\nfor Dental Excellence',
+    subtitle: 'Professional LCD resin 3D printers delivering 16K resolution, 0.03mm accuracy, and reliable chairside production for modern dental practices.',
+    image: '/products/dental-printer.jpg',
+    btnPrimary: { text: 'Explore Printers', link: '/category/3d-printer' },
+    btnSecondary: { text: 'Get a Quote', link: '/inquiry' },
   },
   {
     id: 2,
-    title: 'CS3D ProLite M4K Printer',
-    subtitle: '4K MONOCHROME LCD',
-    description: 'Desktop LCD resin 3D printer with 4K monochrome screen. XY resolution of 0.05mm, print speed up to 50mm/h.',
-    image: '/products/printer-main.jpg',
-    buttonText: 'Learn More',
-    buttonLink: '/product/prolite-m4k',
+    title: 'Premium Resins\nfor Every Application',
+    subtitle: 'From casting to dental models — low shrinkage, high precision, vivid color reproduction. Compatible with all 405nm LCD/DLP printers.',
+    image: '/products/resin-washable-1kg.jpg',
+    btnPrimary: { text: 'Shop Resins', link: '/category/resin' },
+    btnSecondary: { text: 'View Applications', link: '/products' },
   },
   {
     id: 3,
-    title: 'OEM & Bulk Orders',
-    subtitle: 'CUSTOM SOLUTIONS',
-    description: 'Private labeling, custom formulations, and wholesale partnerships for distributors worldwide.',
-    image: '/products/print-sample-1.jpg',
-    buttonText: 'Get in Touch',
-    buttonLink: '/inquiry',
+    title: 'OEM & Bulk\nSolutions Worldwide',
+    subtitle: 'Private labeling, custom formulations, and wholesale partnerships for distributors. 10+ years of manufacturing excellence serving 50+ countries.',
+    image: '/products/industrial-printer.jpg',
+    btnPrimary: { text: 'Contact Sales', link: '/inquiry' },
+    btnSecondary: { text: 'Learn More', link: '/inquiry' },
   },
 ];
 
 export default function HeroCarousel() {
-  const { data: apiSlides } = trpc.banner.list.useQuery();
-  const slides = apiSlides && apiSlides.length > 0 ? apiSlides : fallbackSlides;
   const [current, setCurrent] = useState(0);
+  const total = slides.length;
 
-  const next = useCallback(() => {
-    if (!slides?.length) return;
-    setCurrent((c) => (c + 1) % slides.length);
-  }, [slides]);
-
-  const prev = useCallback(() => {
-    if (!slides?.length) return;
-    setCurrent((c) => (c - 1 + slides.length) % slides.length);
-  }, [slides]);
+  const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
+  const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
 
   useEffect(() => {
-    if (slides.length <= 1) return;
-    const timer = setInterval(next, 5000);
+    const timer = setInterval(next, 6000);
     return () => clearInterval(timer);
-  }, [slides, next]);
+  }, [next]);
+
+  const slide = slides[current];
 
   return (
-    <section className="relative bg-neutral-100 overflow-hidden">
-      <div className="relative h-[400px] sm:h-[480px] lg:h-[540px]">
-        {slides.map((slide, i) => (
+    <section className="relative bg-[#0a1628] overflow-hidden">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0">
+        {slides.map((s, i) => (
           <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+            key={s.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}
           >
-            <div className="absolute inset-0">
-              <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-            </div>
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-4 flex items-center">
-              <div className="max-w-lg text-white">
-                {slide.subtitle && (
-                  <p className="text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-white/80 mb-3">{slide.subtitle}</p>
-                )}
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">{slide.title}</h2>
-                {slide.description && <p className="text-sm sm:text-base text-white/80 mb-6 leading-relaxed">{slide.description}</p>}
-                {slide.buttonText && slide.buttonLink && (
-                  <Link to={slide.buttonLink} className="inline-flex items-center gap-2 px-6 py-3 bg-white text-neutral-900 text-sm font-semibold rounded-lg hover:bg-neutral-100 transition-colors">
-                    {slide.buttonText}
-                  </Link>
-                )}
-              </div>
-            </div>
+            <img src={s.image} alt="" className="w-full h-full object-cover opacity-30" />
           </div>
         ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628] via-[#0a1628]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628] via-transparent to-[#0a1628]/40" />
+      </div>
 
-        {slides.length > 1 && (
-          <>
-            <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-            <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-              <ChevronRight className="w-5 h-5 text-white" />
-            </button>
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-              {slides.map((_, i) => (
-                <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/40'}`} />
-              ))}
+      {/* Content */}
+      <div className="relative max-w-7xl mx-auto px-4 lg:px-6 min-h-[580px] lg:min-h-[680px] flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full py-16">
+          {/* Left: Text */}
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/80 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
+              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+              CreateShape3D — Professional 3D Printing Solutions
             </div>
-          </>
-        )}
+
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-white leading-[1.1] tracking-tight mb-6 whitespace-pre-line">
+              {slide.title}
+            </h1>
+
+            <p className="text-base lg:text-lg text-white/60 leading-relaxed mb-8 max-w-md">
+              {slide.subtitle}
+            </p>
+
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                to={slide.btnPrimary.link}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/25"
+              >
+                {slide.btnPrimary.text}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to={slide.btnSecondary.link}
+                className="inline-flex items-center gap-2 border border-white/25 text-white font-semibold px-8 py-3.5 rounded-lg hover:bg-white/10 transition-all"
+              >
+                {slide.btnSecondary.text}
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: Featured product image */}
+          <div className="hidden lg:flex justify-center items-center">
+            <div className="relative">
+              <div className="absolute inset-0 bg-blue-500/20 rounded-3xl blur-3xl scale-90" />
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="relative w-full max-w-[480px] rounded-2xl shadow-2xl shadow-black/30 transition-all duration-700"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide indicators */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
+        <button onClick={prev} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors">
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <div className="flex gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? 'w-10 bg-blue-500' : 'w-4 bg-white/30 hover:bg-white/50'}`}
+            />
+          ))}
+        </div>
+        <button onClick={next} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors">
+          <ChevronRight className="w-5 h-5" />
+        </button>
       </div>
     </section>
   );
