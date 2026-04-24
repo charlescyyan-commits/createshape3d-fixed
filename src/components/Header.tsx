@@ -136,9 +136,8 @@ export default function Header() {
   }, []);
 
   const getFilteredProducts = (item: MenuItem) => {
-    if (!item.products || !activeSubCategory) return item.products || [];
-    const filtered = item.products.filter(p => p.subCategory === activeSubCategory);
-    return filtered.length > 0 ? filtered : item.products;
+    // Always show ALL products for this category, not just the active subcategory
+    return item.products || [];
   };
 
   const getActiveSubLabel = (item: MenuItem) => {
@@ -239,7 +238,7 @@ export default function Header() {
                                 {getActiveSubLabel(item) || 'All Products'}
                               </h3>
                             </div>
-                            <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
+                            <div className="grid grid-cols-3 lg:grid-cols-5 gap-5">
                               {getFilteredProducts(item).map((product) => (
                                 <Link
                                   key={product.name}
