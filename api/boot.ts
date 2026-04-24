@@ -8,6 +8,19 @@ import { env } from "./lib/env";
 import { createOAuthCallbackHandler } from "./kimi/auth";
 import { Paths } from "@contracts/constants";
 
+console.log("[boot] Starting server...");
+console.log("[boot] NODE_ENV:", process.env.NODE_ENV);
+console.log("[boot] PORT:", process.env.PORT);
+console.log("[boot] DATABASE_URL set:", !!process.env.DATABASE_URL);
+
+try {
+  console.log("[boot] env loaded, appId:", env.appId ? "yes" : "no");
+  console.log("[boot] env loaded, databaseUrl:", env.databaseUrl ? "yes" : "no");
+} catch (e: any) {
+  console.error("[boot] env loading failed:", e.message);
+  throw e;
+}
+
 const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
