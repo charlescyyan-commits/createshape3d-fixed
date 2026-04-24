@@ -40,8 +40,8 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { label: 'About Us', href: '#' },
-                { label: 'FAQs', href: '#' },
-                { label: 'Work With Us', href: '#' },
+                { label: 'FAQs', href: '/support' },
+                { label: 'Work With Us', href: '/inquiry' },
                 { label: 'Contact Us', href: '/inquiry' },
               ].map((item) => (
                 <li key={item.label}>
@@ -73,8 +73,8 @@ export default function Footer() {
             <h3 className="text-xs font-bold uppercase tracking-[0.12em] mb-5 text-neutral-300">Useful Links</h3>
             <ul className="space-y-3">
               {[
-                { label: 'Track Order', href: '#' },
-                { label: 'Latest News', href: '#' },
+                { label: 'Track Order', href: '/support' },
+                { label: 'Latest News', href: '/blog' },
                 { label: 'Privacy Policy', href: '#' },
                 { label: 'Terms of Service', href: '#' },
               ].map((item) => (

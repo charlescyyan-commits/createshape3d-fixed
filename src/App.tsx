@@ -17,6 +17,8 @@ import DentalPrinter from './pages/DentalPrinter'
 import CategoryPage from './pages/CategoryPage'
 import ResinProduct from './pages/ResinProduct'
 import MonoLCDProduct from './pages/MonoLCDProduct'
+import SupportPage from './pages/SupportPage'
+import BlogPage from './pages/BlogPage'
 
 export default function App() {
   return (
@@ -33,6 +35,8 @@ export default function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/inquiry" element={<Inquiry />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/blog" element={<BlogPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />

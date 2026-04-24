@@ -168,7 +168,7 @@ export default function DentalPrinter() {
 
             {/* RIGHT: Product Info */}
             <div className="flex flex-col justify-center">
-              <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
+              <div className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
                 <span>Dental 3D Printer</span>
               </div>
               <h1 className="text-2xl lg:text-[2rem] font-extrabold leading-tight mb-2">Dental Stellar D100</h1>
@@ -188,14 +188,14 @@ export default function DentalPrinter() {
               <div className="flex gap-3 flex-wrap">
                 <button
                   onClick={handleAddToCart}
-                  className="flex items-center gap-2 px-8 py-3.5 bg-neutral-900 text-white font-semibold rounded-lg hover:bg-indigo-600 transition-all hover:-translate-y-0.5"
+                  className="flex items-center gap-2 px-8 py-3.5 bg-neutral-900 text-white font-semibold rounded-lg hover:bg-blue-600 transition-all hover:-translate-y-0.5"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   Buy Now
                 </button>
                 <Link
                   to="/inquiry"
-                  className="flex items-center gap-2 px-7 py-3.5 bg-white text-neutral-900 font-semibold rounded-lg border-[1.5px] border-neutral-200 hover:border-indigo-600 hover:text-indigo-600 transition-all"
+                  className="flex items-center gap-2 px-7 py-3.5 bg-white text-neutral-900 font-semibold rounded-lg border-[1.5px] border-neutral-200 hover:border-blue-600 hover:text-blue-600 transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Contact Sales
@@ -226,7 +226,7 @@ export default function DentalPrinter() {
           <div className="max-w-6xl mx-auto px-4 lg:px-6">
             <div className={`grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-8 lg:gap-12 items-center ${feature.reverse ? 'lg:grid-cols-[1fr_1.15fr]' : ''}`}>
               <div className={feature.reverse ? 'lg:order-2' : ''}>
-                <p className={`text-xs font-bold uppercase tracking-[0.08em] mb-2.5 ${feature.dark ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                <p className={`text-xs font-bold uppercase tracking-[0.08em] mb-2.5 ${feature.dark ? 'text-blue-400' : 'text-blue-600'}`}>
                   {feature.label}
                 </p>
                 <h2 className="text-2xl lg:text-[1.8rem] font-extrabold mb-3.5 leading-tight">{feature.title}</h2>
@@ -258,7 +258,7 @@ export default function DentalPrinter() {
       <section className="py-12 lg:py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4 lg:px-6">
           <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-[0.08em] text-indigo-600 mb-2">Applications</p>
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-blue-600 mb-2">Applications</p>
             <h2 className="text-2xl lg:text-3xl font-extrabold text-neutral-900">Designed for Modern Dentistry</h2>
             <p className="text-neutral-600 mt-2 max-w-2xl mx-auto">
               From temporary restorations to surgical guides, Dental Stellar D100 covers the full spectrum of chairside digital workflow needs.
@@ -267,8 +267,8 @@ export default function DentalPrinter() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
             {applications.map((app) => (
               <div key={app.name} className="bg-white border border-neutral-100 rounded-xl p-5 text-center hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <app.icon className="w-5 h-5 text-indigo-600" />
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <app.icon className="w-5 h-5 text-blue-600" />
                 </div>
                 <h4 className="font-bold text-sm text-neutral-800">{app.name}</h4>
               </div>
@@ -337,7 +337,7 @@ export default function DentalPrinter() {
           <div className="flex gap-4 justify-center flex-wrap">
             <button
               onClick={handleAddToCart}
-              className="flex items-center gap-2 px-10 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-500 transition-colors"
+              className="flex items-center gap-2 px-10 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-colors"
             >
               <ShoppingCart className="w-4 h-4" />
               Buy Now — $1,299.99

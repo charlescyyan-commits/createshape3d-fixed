@@ -73,12 +73,12 @@ const menuItems: MenuItem[] = [
   {
     label: 'Support',
     children: [
-      { label: 'FAQs', href: '/inquiry' },
-      { label: 'Track Your Order', href: '/inquiry' },
+      { label: 'FAQs', href: '/support' },
+      { label: 'Track Your Order', href: '/support' },
     ],
   },
   { label: 'Contact Us', href: '/inquiry' },
-  { label: 'Blog', href: '#' },
+  { label: 'Blog', href: '/blog' },
 ];
 
 export default function Header() {
@@ -202,8 +202,8 @@ export default function Header() {
                   {/* Mega Menu */}
                   {hasMegaMenu && activeDropdown === item.label && (
                     <div
-                      className="fixed left-0 right-0 bg-white border-b border-neutral-200 shadow-xl z-50"
-                      style={{ top: 'calc(4rem + 2px)' }}
+                      className="fixed left-0 right-0 bg-white border-b border-neutral-200 shadow-2xl"
+                      style={{ top: 'calc(4rem + 2px)', zIndex: 9999 }}
                       onMouseEnter={clearTimer}
                       onMouseLeave={() => delayedClose(250)}
                     >

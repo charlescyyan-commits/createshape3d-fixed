@@ -16,7 +16,7 @@ const colors = [
   { name: 'Black', class: 'bg-neutral-900' },
   { name: 'Blue', class: 'bg-blue-500' },
   { name: 'Green', class: 'bg-emerald-500' },
-  { name: 'Red', class: 'bg-red-500' },
+  { name: 'Red', class: 'bg-blue-600' },
   { name: 'Clear', class: 'bg-gradient-to-br from-sky-100 to-sky-300' },
 ];
 
@@ -85,7 +85,7 @@ export default function ResinProduct() {
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-red-500 shadow-[0_0_0_3px_rgba(233,69,96,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
+                    className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${i === selectedImage ? 'border-blue-600 shadow-[0_0_0_3px_rgba(37,99,235,0.1)]' : 'border-neutral-200 hover:border-neutral-400'}`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -94,7 +94,7 @@ export default function ResinProduct() {
               {/* Main Image */}
               <div className="flex-1 relative">
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden aspect-square flex items-center justify-center group">
-                  <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full z-10">SAVE 51%</span>
+                  <span className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full z-10">SAVE 51%</span>
                   <img
                     src={productImages[selectedImage]}
                     alt="Casting Resin"
@@ -132,9 +132,9 @@ export default function ResinProduct() {
 
               {/* Price */}
               <div className="flex items-baseline gap-4 mb-6 pb-6 border-b border-neutral-100">
-                <span className="text-4xl lg:text-[2.625rem] font-extrabold text-red-500 tracking-tight">{priceMap[selectedSize]}</span>
+                <span className="text-4xl lg:text-[2.625rem] font-extrabold text-blue-600 tracking-tight">{priceMap[selectedSize]}</span>
                 <span className="text-xl text-neutral-400 line-through font-medium">{origMap[selectedSize]}</span>
-                <span className="bg-red-50 text-red-500 text-xs font-bold px-3.5 py-1.5 rounded-full">SAVE {selectedSize === 3 ? '$134' : selectedSize === 2 ? '$50' : selectedSize === 1 ? '$24' : '$14'}</span>
+                <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3.5 py-1.5 rounded-full">SAVE {selectedSize === 3 ? '$134' : selectedSize === 2 ? '$50' : selectedSize === 1 ? '$24' : '$14'}</span>
               </div>
 
               {/* Color Selector */}
@@ -180,12 +180,12 @@ export default function ResinProduct() {
               <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-red-500/25"
+                  className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/25"
                 >
                   <ShoppingCart className="w-5 h-5" />
                   Add to Cart
                 </button>
-                <button className="w-14 h-14 border-2 border-neutral-200 rounded-xl flex items-center justify-center hover:border-red-500 hover:bg-red-50 transition-colors">
+                <button className="w-14 h-14 border-2 border-neutral-200 rounded-xl flex items-center justify-center hover:border-blue-600 hover:bg-blue-50 transition-colors">
                   <Heart className="w-5 h-5" />
                 </button>
               </div>
@@ -198,15 +198,15 @@ export default function ResinProduct() {
       <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 lg:px-6">
           <div className="text-center mb-14">
-            <span className="inline-block bg-red-50 text-red-500 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Why Choose CreateShape3D</span>
+            <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Why Choose CreateShape3D</span>
             <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-3">Engineered for Excellence</h2>
             <p className="text-neutral-500 max-w-xl mx-auto text-lg">Every bottle of CreateShape3D Casting Resin is formulated to deliver consistent, high-quality prints.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f) => (
               <div key={f.title} className="bg-white border border-neutral-100 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all">
-                <div className="w-14 h-14 bg-gradient-to-br from-red-50 to-rose-100 rounded-xl flex items-center justify-center mb-5">
-                  <Check className="w-7 h-7 text-red-500" />
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center mb-5">
+                  <Check className="w-7 h-7 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">{f.title}</h3>
                 <p className="text-sm text-neutral-500 leading-relaxed">{f.desc}</p>
@@ -224,7 +224,7 @@ export default function ResinProduct() {
               <img src="/products/print-sample-3.jpg" alt="Applications" className="w-full h-full object-cover" />
             </div>
             <div>
-              <span className="inline-block bg-red-50 text-red-500 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Applications</span>
+              <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Applications</span>
               <h3 className="text-2xl lg:text-3xl font-extrabold mb-4">From Miniatures to Industrial Parts</h3>
               <p className="text-neutral-500 leading-relaxed mb-6">Whether you're crafting detailed board game miniatures or functional industrial prototypes, CreateShape3D Casting Resin delivers the precision and durability your projects demand.</p>
               <ul className="space-y-3">
@@ -248,7 +248,7 @@ export default function ResinProduct() {
               <img src="/products/print-sample-1.jpg" alt="Compatibility" className="w-full h-full object-cover" />
             </div>
             <div className="lg:order-1">
-              <span className="inline-block bg-red-50 text-red-500 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Compatibility</span>
+              <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Compatibility</span>
               <h3 className="text-2xl lg:text-3xl font-extrabold mb-4">Works with Your Printer</h3>
               <p className="text-neutral-500 leading-relaxed mb-6">Designed for universal compatibility with all major LCD, MSLA, and DLP 3D printers. The 405nm wavelength ensures reliable curing across a wide range of devices.</p>
               <ul className="space-y-3">
@@ -268,7 +268,7 @@ export default function ResinProduct() {
       <section className="py-16 lg:py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 lg:px-6">
           <div className="text-center mb-10">
-            <span className="inline-block bg-red-50 text-red-500 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Details</span>
+            <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Details</span>
             <h2 className="text-3xl font-extrabold tracking-tight mb-3">Technical Specifications</h2>
             <p className="text-neutral-500">Everything you need to know about CreateShape3D Casting Resin.</p>
           </div>
@@ -287,7 +287,7 @@ export default function ResinProduct() {
       <section className="py-16 lg:py-20 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 lg:px-6">
           <div className="text-center mb-14">
-            <span className="inline-block bg-red-50 text-red-500 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Versatility</span>
+            <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4">Versatility</span>
             <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-3">Print Anything You Imagine</h2>
             <p className="text-neutral-500 max-w-xl mx-auto text-lg">From artistic creations to engineering prototypes, the possibilities are endless.</p>
           </div>
@@ -297,7 +297,7 @@ export default function ResinProduct() {
               { title: 'Prototyping', desc: 'Rapidly iterate CAD designs into physical models for testing and validation.' },
               { title: 'Industrial Parts', desc: 'Produce functional components, jigs, fixtures, and end-use parts with precision.' },
             ].map((item) => (
-              <div key={item.title} className="bg-white border-2 border-neutral-100 rounded-2xl p-8 text-center hover:border-red-500 hover:shadow-lg transition-all">
+              <div key={item.title} className="bg-white border-2 border-neutral-100 rounded-2xl p-8 text-center hover:border-blue-600 hover:shadow-lg transition-all">
                 <div className="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Check className="w-8 h-8 text-neutral-700" />
                 </div>
@@ -316,7 +316,7 @@ export default function ResinProduct() {
           <p className="text-white/60 mb-8 text-lg">Get premium Casting Resin and bring your ideas to life with stunning detail and reliability.</p>
           <button
             onClick={handleAddToCart}
-            className="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold px-12 py-4 rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-red-500/30"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-12 py-4 rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-600/30"
           >
             <ShoppingCart className="w-5 h-5" />
             Add to Cart
