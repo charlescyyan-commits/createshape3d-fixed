@@ -9,12 +9,13 @@ import CategoryPage from './pages/CategoryPage'
 import SupportPage from './pages/SupportPage'
 import BlogPage from './pages/BlogPage'
 import CmsPage from './pages/CmsPage'
+import Cart from './pages/Cart'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} /> 
         <Route path="/products" element={<ProductList />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/support" element={<SupportPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/page/:slug" element={<CmsPage />} />
+        <Route path="/cart" element={<Cart />} />
       </Route>
     </Routes>
   )
