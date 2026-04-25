@@ -4,22 +4,12 @@ import type { HttpBindings } from "@hono/node-server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "./router";
 import { createContext } from "./context";
-import { env } from "./lib/env";
 import { createOAuthCallbackHandler } from "./kimi/auth";
 import { Paths } from "@contracts/constants";
 
 console.log("[boot] Starting server...");
 console.log("[boot] NODE_ENV:", process.env.NODE_ENV);
 console.log("[boot] PORT:", process.env.PORT);
-console.log("[boot] DATABASE_URL set:", !!process.env.DATABASE_URL);
-
-try {
-  console.log("[boot] env loaded, appId:", env.appId ? "yes" : "no");
-  console.log("[boot] env loaded, databaseUrl:", env.databaseUrl ? "yes" : "no");
-} catch (e: any) {
-  console.error("[boot] env loading failed:", e.message);
-  throw e;
-}
 
 const app = new Hono<{ Bindings: HttpBindings }>();
 
@@ -38,7 +28,7 @@ app.all("/api/*", (c) => c.json({ error: "Not Found" }, 404));
 
 export default app;
 
-if (env.isProduction) {
+if (process.env.NODE_ENV === "production") {
   const { serve } = await import("@hono/node-server");
   const { serveStaticFiles } = await import("./lib/vite");
   serveStaticFiles(app);

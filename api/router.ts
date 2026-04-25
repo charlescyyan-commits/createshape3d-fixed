@@ -1,23 +1,12 @@
 import { createRouter, publicQuery } from "./middleware";
-import { productRouter, categoryRouter, bannerRouter } from "./productRouter";
-import { inquiryRouter } from "./inquiryRouter";
-import { settingRouter } from "./settingRouter";
-import { cartRouter } from "./cartRouter";
 import { authRouter } from "./auth-router";
-import { pageRouter } from "./pageRouter";
+import { inquiryRouter } from "./inquiryRouter";
 import { uploadRouter } from "./uploadRouter";
-import { dashboardRouter } from "./dashboardRouter";
+import { pingRouter } from "./pingRouter";
 
 export const appRouter = createRouter({
-  ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
-  product: productRouter,
-  category: categoryRouter,
-  banner: bannerRouter,
-  inquiry: inquiryRouter,
-  setting: settingRouter,
-  cart: cartRouter,
+  ping: pingRouter,
   auth: authRouter,
-  page: pageRouter,
+  inquiry: inquiryRouter,
   upload: uploadRouter,
-  dashboard: dashboardRouter,
 });

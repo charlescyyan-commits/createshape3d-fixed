@@ -1,131 +1,103 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const slides = [
+const defaultSlides = [
   {
-    id: 1,
-    title: 'Precision 3D Printing\nfor Dental Excellence',
-    subtitle: 'Professional LCD resin 3D printers delivering 16K resolution, 0.03mm accuracy, and reliable chairside production for modern dental practices.',
-    image: '/products/dental-printer.jpg',
-    btnPrimary: { text: 'Explore Printers', link: '/category/3d-printer' },
-    btnSecondary: { text: 'Get a Quote', link: '/inquiry' },
+    title: 'CS3D ProLite M4K',
+    subtitle: '4K MONOCHROME LCD 3D PRINTER',
+    description: '0.03mm XY resolution | 16K LCD technology | 220mm/h print speed',
+    image: '/slides/hero-1.jpg',
+    buttonText: 'Shop Now',
+    buttonLink: '/product/prolite-m4k',
   },
   {
-    id: 2,
-    title: 'Premium Resins\nfor Every Application',
-    subtitle: 'From casting to dental models — low shrinkage, high precision, vivid color reproduction. Compatible with all 405nm LCD/DLP printers.',
-    image: '/products/resin-washable-1kg.jpg',
-    btnPrimary: { text: 'Shop Resins', link: '/category/resin' },
-    btnSecondary: { text: 'View Applications', link: '/products' },
+    title: 'Premium Dental Resin',
+    subtitle: 'BIOCOMPATIBLE CASTING RESIN',
+    description: 'Class IIa biocompatible | High precision | Smooth surface finish',
+    image: '/slides/hero-2.jpg',
+    buttonText: 'Shop Resins',
+    buttonLink: '/category/resin',
   },
   {
-    id: 3,
-    title: 'OEM & Bulk\nSolutions Worldwide',
-    subtitle: 'Private labeling, custom formulations, and wholesale partnerships for distributors. 10+ years of manufacturing excellence serving 50+ countries.',
-    image: '/products/industrial-printer.jpg',
-    btnPrimary: { text: 'Contact Sales', link: '/inquiry' },
-    btnSecondary: { text: 'Learn More', link: '/inquiry' },
+    title: 'Industrial Nova X1',
+    subtitle: 'LARGE FORMAT 3D PRINTER',
+    description: '400×200mm build volume | 0.05mm precision | Industrial-grade reliability',
+    image: '/slides/hero-3.jpg',
+    buttonText: 'Learn More',
+    buttonLink: '/product/industrial-nova-x1',
   },
 ];
 
 export default function HeroCarousel() {
   const [current, setCurrent] = useState(0);
-  const total = slides.length;
+  const [slides, setSlides] = useState(defaultSlides);
+  const [loading, setLoading] = useState(true);
 
-  const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
-  const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
+  useEffect(() => {
+    // Try to fetch from WordPress ACF option "home_banners"
+    const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape.com";
+    fetch(`${WP_URL}/wp-json/acf/v3/options/home_banners`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.home_banners?.length) {
+          const wpSlides = data.home_banners.map((b: any) => ({
+            title: b.banner_title || '',
+            subtitle: b.banner_subtitle || '',
+            description: b.banner_description || '',
+            image: b.banner_image?.url || b.banner_image || '/slides/hero-1.jpg',
+            buttonText: b.banner_button_text || 'Shop Now',
+            buttonLink: b.banner_button_link || '/products',
+          }));
+          setSlides(wpSlides);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const next = () => setCurrent(c => (c + 1) % slides.length);
+  const prev = () => setCurrent(c => (c - 1 + slides.length) % slides.length);
 
   useEffect(() => {
     const timer = setInterval(next, 6000);
     return () => clearInterval(timer);
-  }, [next]);
+  }, [slides.length]);
+
+  if (loading) return <div className="h-[60vh] min-h-[500px] bg-[#0a1628] animate-pulse" />;
 
   const slide = slides[current];
 
   return (
-    <section className="relative bg-[#0a1628] overflow-hidden">
-      {/* Background image with overlay */}
-      <div className="absolute inset-0">
-        {slides.map((s, i) => (
-          <div
-            key={s.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <img src={s.image} alt="" className="w-full h-full object-cover opacity-30" />
-          </div>
+    <div className="relative h-[60vh] min-h-[500px] bg-[#0a1628] overflow-hidden">
+      {slides.map((s, i) => (
+        <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0'}`}>
+          <img src={s.image} alt={s.title} className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628] via-[#0a1628]/80 to-transparent" />
+        </div>
+      ))}
+
+      <div className="relative max-w-7xl mx-auto px-4 lg:px-6 h-full flex items-center">
+        <div className="max-w-xl">
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-400 mb-3">{slide.subtitle}</p>
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">{slide.title}</h1>
+          <p className="text-white/60 text-lg mb-8">{slide.description}</p>
+          <Link to={slide.buttonLink} className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3.5 rounded-xl transition-all">
+            {slide.buttonText}
+          </Link>
+        </div>
+      </div>
+
+      {/* Arrows */}
+      <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"><ChevronLeft className="w-6 h-6" /></button>
+      <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"><ChevronRight className="w-6 h-6" /></button>
+
+      {/* Dots */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+        {slides.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? 'bg-white w-8' : 'bg-white/40'}`} />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628] via-[#0a1628]/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628] via-transparent to-[#0a1628]/40" />
       </div>
-
-      {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-6 min-h-[580px] lg:min-h-[680px] flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full py-16">
-          {/* Left: Text */}
-          <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/80 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
-              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
-              CreateShape3D — Professional 3D Printing Solutions
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-white leading-[1.1] tracking-tight mb-6 whitespace-pre-line">
-              {slide.title}
-            </h1>
-
-            <p className="text-base lg:text-lg text-white/60 leading-relaxed mb-8 max-w-md">
-              {slide.subtitle}
-            </p>
-
-            <div className="flex gap-3 flex-wrap">
-              <Link
-                to={slide.btnPrimary.link}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/25"
-              >
-                {slide.btnPrimary.text}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to={slide.btnSecondary.link}
-                className="inline-flex items-center gap-2 border border-white/25 text-white font-semibold px-8 py-3.5 rounded-lg hover:bg-white/10 transition-all"
-              >
-                {slide.btnSecondary.text}
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: Featured product image */}
-          <div className="hidden lg:flex justify-center items-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500/20 rounded-3xl blur-3xl scale-90" />
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="relative w-full max-w-[480px] rounded-2xl shadow-2xl shadow-black/30 transition-all duration-700"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Slide indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
-        <button onClick={prev} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors">
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div className="flex gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? 'w-10 bg-blue-500' : 'w-4 bg-white/30 hover:bg-white/50'}`}
-            />
-          ))}
-        </div>
-        <button onClick={next} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors">
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
-    </section>
+    </div>
   );
 }

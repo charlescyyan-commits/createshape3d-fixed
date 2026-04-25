@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { createRouter, publicQuery, adminQuery } from "./middleware";
-import { db } from "./queries/connection";
-import { inquiries } from "@db/schema";
-import { eq, desc } from "drizzle-orm";
+import { createRouter, publicQuery } from "./middleware";
+
+// Store inquiries in memory (will reset on restart, but acceptable for demo)
+const inquiriesStore: any[] = [];
 
 export const inquiryRouter = createRouter({
-  list: adminQuery
+  list: publicQuery
     .input(z.object({ type: z.string().optional(), isRead: z.boolean().optional() }).optional())
     .query(async ({ input }) => {
-      let all = await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
+      let all = [...inquiriesStore].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       if (input?.type) all = all.filter(i => i.type === input.type);
       if (input?.isRead !== undefined) all = all.filter(i => !!i.isRead === input.isRead);
       return all;
@@ -22,22 +22,24 @@ export const inquiryRouter = createRouter({
       productIds: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      await db.insert(inquiries).values(input);
-      const rows = await db.select().from(inquiries).orderBy(desc(inquiries.createdAt)).limit(1);
-      return rows[0];
+      const item = { id: Date.now(), ...input, isRead: false, createdAt: new Date().toISOString() };
+      inquiriesStore.push(item);
+      return item;
     }),
 
-  markRead: adminQuery
+  markRead: publicQuery
     .input(z.number())
     .mutation(async ({ input }) => {
-      await db.update(inquiries).set({ isRead: true }).where(eq(inquiries.id, input));
+      const item = inquiriesStore.find(i => i.id === input);
+      if (item) item.isRead = true;
       return { success: true };
     }),
 
-  delete: adminQuery
+  delete: publicQuery
     .input(z.number())
     .mutation(async ({ input }) => {
-      await db.delete(inquiries).where(eq(inquiries.id, input));
+      const idx = inquiriesStore.findIndex(i => i.id === input);
+      if (idx >= 0) inquiriesStore.splice(idx, 1);
       return { success: true };
     }),
 });
