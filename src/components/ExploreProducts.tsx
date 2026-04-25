@@ -1,16 +1,12 @@
 import { Link } from 'react-router';
-import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { getWooProducts, formatWooPrice, type WooProduct } from '@/lib/wp-client';
+import { useProducts } from '@/hooks/useWPQueries';
+import { formatWooPrice } from '@/lib/wp-client';
 
 export default function ExploreProducts() {
-  const [products, setProducts] = useState<WooProduct[]>([]);
+  const { data: products } = useProducts({ per_page: 8 });
 
-  useEffect(() => {
-    getWooProducts({ per_page: 8 }).then(setProducts).catch(() => {});
-  }, []);
-
-  if (!products.length) return null;
+  if (!products?.length) return null;
 
   return (
     <section className="py-16 lg:py-24 bg-white">
@@ -20,12 +16,10 @@ export default function ExploreProducts() {
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600 mb-3">Products</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0a1628]">Explore Our Products</h2>
           </div>
-          <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
-            View All <ArrowRight className="w-4 h-4" />
-          </Link>
+          <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">View All <ArrowRight className="w-4 h-4" /></Link>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.map(product => (
+          {products.map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -37,7 +31,7 @@ export default function ExploreProducts() {
   );
 }
 
-function ProductCard({ product }: { product: WooProduct }) {
+function ProductCard({ product }: { product: any }) {
   const image = product.images?.[0]?.src || '/placeholder-product.jpg';
   const priceInfo = formatWooPrice(product);
 

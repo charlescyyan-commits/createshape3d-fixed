@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router'
 import { HelmetProvider } from 'react-helmet-async'
+import QueryProvider from './providers/QueryProvider'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import ProductList from './pages/ProductList'
@@ -24,32 +25,34 @@ import AdminBanners from './pages/admin/AdminBanners'
 
 export default function App() {
   return (
-    <HelmetProvider>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/product/:slug" element={<ProductDetail />} />
-          <Route path="/product/casting-resin" element={<ResinProduct />} />
-          <Route path="/product/mono-lcd-screen" element={<MonoLCDProduct />} />
-          <Route path="/dental-printer" element={<DentalPrinter />} />
-          <Route path="/inquiry" element={<Inquiry />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/page/:slug" element={<CmsPage />} />
-        </Route>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="banners" element={<AdminBanners />} />
-          <Route path="inquiries" element={<AdminInquiries />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="pages" element={<AdminPages />} />
-        </Route>
-      </Routes>
-    </HelmetProvider>
+    <QueryProvider>
+      <HelmetProvider>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
+            <Route path="/product/:slug" element={<ProductDetail />} />
+            <Route path="/product/casting-resin" element={<ResinProduct />} />
+            <Route path="/product/mono-lcd-screen" element={<MonoLCDProduct />} />
+            <Route path="/dental-printer" element={<DentalPrinter />} />
+            <Route path="/inquiry" element={<Inquiry />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/page/:slug" element={<CmsPage />} />
+          </Route>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="banners" element={<AdminBanners />} />
+            <Route path="inquiries" element={<AdminInquiries />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="pages" element={<AdminPages />} />
+          </Route>
+        </Routes>
+      </HelmetProvider>
+    </QueryProvider>
   )
 }

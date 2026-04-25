@@ -1,11 +1,9 @@
 import { Link } from 'react-router';
-import { useState, useEffect } from 'react';
 import { Loader2, Calendar, ArrowRight } from 'lucide-react';
-import { getWPPosts } from '@/lib/wp-client';
+import { usePosts } from '@/hooks/useWPQueries';
 import { Helmet } from 'react-helmet-async';
 
 function getFeaturedImageFromEmbed(post: any): string {
-  // _embed includes wp:featuredmedia with source_url
   const embedded = post._embedded;
   if (embedded && embedded['wp:featuredmedia'] && embedded['wp:featuredmedia'].length > 0) {
     const media = embedded['wp:featuredmedia'][0];
@@ -17,26 +15,22 @@ function getFeaturedImageFromEmbed(post: any): string {
 }
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getWPPosts({ per_page: 12 }).then(data => {
-      setPosts(data || []);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const { data: posts, isLoading } = usePosts({ per_page: 12 });
 
   return (
     <>
-      <Helmet><title>Blog | CreateShape3D</title><meta name="description" content="Latest news, tips, and insights from CreateShape3D." /></Helmet>
+      <Helmet>
+        <title>Blog | CreateShape3D</title>
+        <meta name="description" content="Latest news, tips, and insights from CreateShape3D." />
+        <link rel="canonical" href={`${import.meta.env.VITE_WP_URL || ''}/blog`} />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-2">Blog</h1>
         <p className="text-neutral-500 mb-8">Latest news, tips, and insights from CreateShape3D.</p>
 
-        {loading ? <div className="text-center py-20"><Loader2 className="w-8 h-8 animate-spin text-neutral-400 mx-auto" /></div> : (
+        {isLoading ? <div className="text-center py-20"><Loader2 className="w-8 h-8 animate-spin text-neutral-400 mx-auto" /></div> : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map(post => {
+            {(posts || []).map((post: any) => {
               const img = getFeaturedImageFromEmbed(post);
               return (
                 <article key={post.id} className="bg-white border border-neutral-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
@@ -60,7 +54,7 @@ export default function BlogPage() {
           </div>
         )}
 
-        {posts.length === 0 && !loading && (
+        {(!posts || posts.length === 0) && !isLoading && (
           <div className="text-center py-20 text-neutral-400">No blog posts found. Please check your WordPress setup.</div>
         )}
       </div>

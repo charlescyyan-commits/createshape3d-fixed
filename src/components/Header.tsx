@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router';
 import { Search, Menu, X, User, ChevronDown } from 'lucide-react';
-import { trpc } from '@/providers/trpc';
 
 interface MenuProduct {
   name: string;
@@ -87,8 +86,6 @@ export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const { data: settings } = trpc.setting.list.useQuery();
-  const getSetting = (key: string) => settings?.find(s => s.key === key)?.value;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -157,16 +154,10 @@ export default function Header() {
         <div className="flex items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-4 lg:mr-6">
-            {getSetting('site_logo') ? (
-              <img src={getSetting('site_logo') || ''} alt="Logo" className="h-8 w-auto" />
-            ) : (
-              <>
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">CS</span>
-                </div>
-                <span className="text-lg font-bold tracking-tight hidden sm:block">CreateShape3D</span>
-              </>
-            )}
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xs font-bold">CS</span>
+            </div>
+            <span className="text-lg font-bold tracking-tight hidden sm:block">CreateShape3D</span>
           </Link>
 
           {/* Desktop Nav */}

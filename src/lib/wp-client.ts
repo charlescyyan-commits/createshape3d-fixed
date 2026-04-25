@@ -54,7 +54,6 @@ export async function getWPPosts(params?: { per_page?: number; category?: string
   if (params?.per_page) qs.set("per_page", String(params.per_page));
   if (params?.category) qs.set("categories", params.category);
   if (params?.page) qs.set("page", String(params.page));
-  qs.set("_fields", "id,title,slug,excerpt,date,featured_media");
   qs.set("_embed", "wp:featuredmedia");
   return wpFetch(`/wp/v2/posts?${qs.toString()}`);
 }

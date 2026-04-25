@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { LayoutDashboard, Package, FolderOpen, MessageSquare, ArrowLeft, Globe, ExternalLink } from 'lucide-react';
+const WP_URL = import.meta.env.VITE_WP_URL || 'https://createshape3d.com';
 
 const nav = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -7,9 +8,9 @@ const nav = [
 ];
 
 const wpLinks = [
-  { url: 'https://createshape3d.com/wp-admin/edit.php?post_type=product', label: 'Manage Products', icon: Package },
-  { url: 'https://createshape3d.com/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product', label: 'Manage Categories', icon: FolderOpen },
-  { url: 'https://createshape3d.com/wp-admin/edit.php?post_type=page', label: 'Manage Pages', icon: Globe },
+  { url: '{WP_URL}/wp-admin/edit.php?post_type=product', label: 'Manage Products', icon: Package },
+  { url: '{WP_URL}/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product', label: 'Manage Categories', icon: FolderOpen },
+  { url: '{WP_URL}/wp-admin/edit.php?post_type=page', label: 'Manage Pages', icon: Globe },
 ];
 
 export default function AdminLayout() {

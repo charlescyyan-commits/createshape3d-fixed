@@ -1,23 +1,13 @@
 import { useParams, Link } from 'react-router';
-import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
-import { getWPPageBySlug } from '@/lib/wp-client';
+import { usePage } from '@/hooks/useWPQueries';
+import { Helmet } from 'react-helmet-async';
 
 export default function CmsPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [page, setPage] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: page, isLoading } = usePage(slug || '');
 
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    getWPPageBySlug(slug)
-      .then(p => setPage(p))
-      .catch(() => setPage(null))
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) return <div className="text-center py-20"><Loader2 className="w-8 h-8 animate-spin text-neutral-400 mx-auto" /></div>;
+  if (isLoading) return <div className="text-center py-20"><Loader2 className="w-8 h-8 animate-spin text-neutral-400 mx-auto" /></div>;
 
   if (!page) {
     return (
@@ -28,10 +18,22 @@ export default function CmsPage() {
     );
   }
 
+  const title = page.title?.rendered || page.title || '';
+  const content = page.content?.rendered || page.content || '';
+  const plainText = content.replace(/<[^>]*>/g, '').slice(0, 160);
+  const canonical = `${import.meta.env.VITE_WP_URL || ''}/page/${slug}`;
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-6">{page.title?.rendered || page.title}</h1>
-      <div className="prose max-w-none text-neutral-600" dangerouslySetInnerHTML={{ __html: page.content?.rendered || page.content || '' }} />
-    </div>
+    <>
+      <Helmet>
+        <title>{title} | CreateShape3D</title>
+        <meta name="description" content={plainText} />
+        <link rel="canonical" href={canonical} />
+      </Helmet>
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold mb-6">{title}</h1>
+        <div className="prose max-w-none text-neutral-600" dangerouslySetInnerHTML={{ __html: content }} />
+      </div>
+    </>
   );
 }

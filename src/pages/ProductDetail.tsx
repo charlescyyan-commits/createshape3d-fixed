@@ -1,44 +1,33 @@
 import { useParams, Link } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, FileText, Mail, ExternalLink } from 'lucide-react';
-import { toast } from 'sonner';
-import { getWooProductBySlug, formatWooPrice, type WooProduct } from '@/lib/wp-client';
+import { useProduct } from '@/hooks/useWPQueries';
+import { formatWooPrice } from '@/lib/wp-client';
 import { Helmet } from 'react-helmet-async';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const [product, setProduct] = useState<WooProduct | null>(null);
-  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    getWooProductBySlug(slug).then(p => {
-      setProduct(p);
-      setLoading(false);
-    }).catch(err => {
-      toast.error('Failed to load product');
-      console.error(err);
-      setLoading(false);
-    });
-  }, [slug]);
+  const { data: product, isLoading } = useProduct(slug || '');
 
-  if (loading) return <div className="text-center py-20 text-neutral-400">Loading...</div>;
+  if (isLoading) return <div className="text-center py-20 text-neutral-400">Loading...</div>;
   if (!product) return <div className="text-center py-20 text-neutral-400">Product not found</div>;
 
-  const images = product.images?.length ? product.images.map(img => img.src) : ['/placeholder-product.jpg'];
+  const images = product.images?.length ? product.images.map((img: any) => img.src) : ['/placeholder-product.jpg'];
   const priceInfo = formatWooPrice(product);
   const isInStock = product.stock_status === 'instock';
-
   const addToCartUrl = `${product.permalink}?add-to-cart=${product.id}&quantity=${quantity}`;
+
+  const metaDesc = product.short_description?.replace(/<[^>]*>/g, '').slice(0, 160) || '';
 
   return (
     <>
       <Helmet>
         <title>{product.name} | CreateShape3D</title>
-        <meta name="description" content={product.short_description?.replace(/<[^>]*>/g, '').slice(0, 160) || ''} />
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={product.permalink} />
       </Helmet>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -54,7 +43,7 @@ export default function ProductDetail() {
             </div>
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto">
-                {images.map((img, i) => (
+                {images.map((img: string, i: number) => (
                   <button key={i} onClick={() => setSelectedImage(i)} className={`w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${selectedImage === i ? 'border-blue-500' : 'border-transparent'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -65,10 +54,10 @@ export default function ProductDetail() {
 
           {/* Info */}
           <div>
-            <p className="text-xs text-neutral-400 mb-2">{product.categories?.map(c => c.name).join(' / ') || 'Product'}</p>
+            <p className="text-xs text-neutral-400 mb-2">{product.categories?.map((c: any) => c.name).join(' / ') || 'Product'}</p>
             <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
 
-            {/* Price */}
+            {/* Price: price_html first */}
             <div className="flex items-baseline gap-3 mb-6">
               {product.prices?.price_html ? (
                 <span dangerouslySetInnerHTML={{ __html: product.prices.price_html }} />
@@ -101,20 +90,10 @@ export default function ProductDetail() {
 
             {/* Actions — direct to WooCommerce */}
             <div className="flex gap-3 mb-8">
-              <a
-                href={addToCartUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
-              >
+              <a href={addToCartUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors">
                 Add to Cart
               </a>
-              <a
-                href={product.permalink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-              >
+              <a href={product.permalink} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
                 Buy Now <ExternalLink className="w-4 h-4" />
               </a>
             </div>
