@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { db } from "./queries/connection";
 import { siteSettings } from "@db/schema";
 import { eq, asc } from "drizzle-orm";
@@ -16,7 +16,7 @@ export const settingRouter = createRouter({
       return rows[0] || null;
     }),
 
-  set: publicQuery
+  set: adminQuery
     .input(z.object({ key: z.string(), value: z.string().optional(), label: z.string().optional(), groupName: z.string().optional() }))
     .mutation(async ({ input }) => {
       const rows = await db.select().from(siteSettings).where(eq(siteSettings.key, input.key)).limit(1);
@@ -28,7 +28,7 @@ export const settingRouter = createRouter({
       return { success: true };
     }),
 
-  delete: publicQuery
+  delete: adminQuery
     .input(z.number())
     .mutation(async ({ input }) => {
       await db.delete(siteSettings).where(eq(siteSettings.id, input));

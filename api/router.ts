@@ -6,6 +6,7 @@ import { cartRouter } from "./cartRouter";
 import { authRouter } from "./auth-router";
 import { pageRouter } from "./pageRouter";
 import { uploadRouter } from "./uploadRouter";
+import { dashboardRouter } from "./dashboardRouter";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -18,4 +19,5 @@ export const appRouter = createRouter({
   auth: authRouter,
   page: pageRouter,
   upload: uploadRouter,
+  dashboard: dashboardRouter,
 });

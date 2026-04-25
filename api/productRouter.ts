@@ -39,6 +39,40 @@ export const productRouter = createRouter({
       return result;
     }),
 
+  adminList: adminQuery
+    .input(z.object({
+      search: z.string().optional(),
+      status: z.enum(["all", "active", "inactive"]).optional(),
+      categoryId: z.number().optional(),
+    }).optional())
+    .query(async ({ input }) => {
+      let allProducts = await db.select().from(products).orderBy(asc(products.sortOrder));
+      
+      if (input?.search) {
+        allProducts = allProducts.filter(p => p.name.toLowerCase().includes(input.search!.toLowerCase()));
+      }
+      if (input?.status === "active") {
+        allProducts = allProducts.filter(p => p.isActive !== false);
+      } else if (input?.status === "inactive") {
+        allProducts = allProducts.filter(p => p.isActive === false);
+      }
+      if (input?.categoryId) {
+        allProducts = allProducts.filter(p => p.categoryId === input.categoryId);
+      }
+
+      const result = await Promise.all(allProducts.map(async (p) => {
+        const imgs = await db.select().from(productImages).where(eq(productImages.productId, p.id)).orderBy(asc(productImages.sortOrder));
+        let cat = null;
+        if (p.categoryId) {
+          const cats = await db.select().from(categories).where(eq(categories.id, p.categoryId)).limit(1);
+          cat = cats[0] || null;
+        }
+        return { ...p, images: imgs, category: cat };
+      }));
+
+      return result;
+    }),
+
   bySlug: publicQuery.input(z.string()).query(async ({ input }) => {
     const prodRows = await db.select().from(products).where(eq(products.slug, input)).limit(1);
     if (prodRows.length === 0) return null;
@@ -134,6 +168,13 @@ export const categoryRouter = createRouter({
     const allCats = await db.select().from(categories).orderBy(asc(categories.sortOrder));
     const root = allCats.filter(c => c.isActive !== false && !c.parentId);
     const children = allCats.filter(c => c.isActive !== false && c.parentId);
+    return root.map(r => ({ ...r, children: children.filter(c => c.parentId === r.id) }));
+  }),
+
+  adminList: adminQuery.query(async () => {
+    const allCats = await db.select().from(categories).orderBy(asc(categories.sortOrder));
+    const root = allCats.filter(c => !c.parentId);
+    const children = allCats.filter(c => c.parentId);
     return root.map(r => ({ ...r, children: children.filter(c => c.parentId === r.id) }));
   }),
 
