@@ -2,11 +2,13 @@ import { useParams, Link } from 'react-router';
 import { useEffect, useState } from 'react';
 import { ShoppingCart, ArrowLeft, FileText, Mail, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatWooPrice, getWooProductBySlug, type WooProduct } from '@/lib/wp-client';
+import { formatWooPrice } from '@/lib/wp-client';
 import { useWooProductBySlugQuery } from '@/hooks/useWPQueries';
 import { Helmet } from 'react-helmet-async';
 import { buildCanonical, stripHtmlToText, truncateText } from '@/lib/seo';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { getLocalProductBySlug } from '@/lib/local-products';
+import { useCart } from '@/contexts/CartContext';
 
 const specLabels: Record<string, string> = {
   xy_resolution: 'XY Resolution',
@@ -24,28 +26,34 @@ export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { addItem } = useCart();
 
   const { data: product, isLoading: loading, error } = useWooProductBySlugQuery(slug);
   useEffect(() => {
     if (error) toast.error('Failed to load product');
   }, [error]);
 
-  if (loading) return <div className="text-center py-20 text-neutral-400">Loading...</div>;
-  if (!product) return <div className="text-center py-20 text-neutral-400">Product not found</div>;
+  const local = !product ? getLocalProductBySlug(slug) : null;
 
-  const images = product.images?.length ? product.images.map(img => img.src) : ['/placeholder-product.jpg'];
-  const price = formatWooPrice(product);
-  const isResin = product.categories?.some(c => c.slug === 'resin');
-  const seoTitle = `${product.name} | CreateShape3D`;
-  const seoDescSource = product.short_description || product.description || '';
+  if (loading) return <div className="text-center py-20 text-neutral-400">Loading...</div>;
+  if (!product && !local) return <div className="text-center py-20 text-neutral-400">Product not found</div>;
+
+  const effectiveName = product?.name || local!.name;
+  const images = product
+    ? (product.images?.length ? product.images.map(img => img.src) : ['/placeholder-product.jpg'])
+    : (local!.images?.length ? local!.images : ['/placeholder-product.jpg']);
+  const price = product ? formatWooPrice(product) : { html: undefined, text: local!.priceText || '' };
+  const seoTitle = `${effectiveName} | CreateShape3D`;
+  const seoDescSource = product ? (product.short_description || product.description || '') : (local!.shortDescription || '');
   const seoDesc = truncateText(stripHtmlToText(seoDescSource), 160);
-  const canonical = product.permalink || buildCanonical(`/product/${product.slug}`);
+  const canonical = product?.permalink || buildCanonical(`/product/${product?.slug || local!.slug}`);
+  const categoryLabel = product?.categories?.map(c => c.name).join(' / ') || local?.categoryLabel || 'Product';
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <Helmet>
         <title>{seoTitle}</title>
-        <meta name="description" content={seoDesc || `View details and pricing for ${product.name}.`} />
+        <meta name="description" content={seoDesc || `View details and pricing for ${effectiveName}.`} />
         <link rel="canonical" href={canonical} />
       </Helmet>
       <Link to="/products" className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 mb-6"><ArrowLeft className="w-4 h-4" /> All Products</Link>
@@ -54,7 +62,7 @@ export default function ProductDetail() {
         {/* Images */}
         <div>
           <div className="aspect-square bg-neutral-50 rounded-xl overflow-hidden mb-4">
-            <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" />
+            <img src={images[selectedImage]} alt={effectiveName} className="w-full h-full object-cover" />
           </div>
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
@@ -69,8 +77,8 @@ export default function ProductDetail() {
 
         {/* Info */}
         <div>
-          <p className="text-xs text-neutral-400 mb-2">{product.categories?.map(c => c.name).join(' / ') || 'Product'}</p>
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+          <p className="text-xs text-neutral-400 mb-2">{categoryLabel}</p>
+          <h1 className="text-3xl font-bold mb-4">{effectiveName}</h1>
           <div className="flex items-baseline gap-3 mb-6">
             <span
               className="text-3xl font-bold"
@@ -78,9 +86,11 @@ export default function ProductDetail() {
             />
           </div>
 
-          {product.short_description && (
+          {product?.short_description ? (
             <div className="text-sm text-neutral-600 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }} />
-          )}
+          ) : local?.shortDescription ? (
+            <div className="text-sm text-neutral-600 mb-6">{local.shortDescription}</div>
+          ) : null}
 
           {/* Quantity */}
           <div className="flex items-center gap-4 mb-6">
@@ -97,26 +107,59 @@ export default function ProductDetail() {
 
           {/* Actions */}
           <div className="flex gap-3 mb-8">
-            <a
-              href={`${product.permalink}?add-to-cart=${product.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
-            >
-              <ShoppingCart className="w-5 h-5" /> Add to Cart
-            </a>
-            <a
-              href={product.permalink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-            >
-              Buy Now <ExternalLink className="w-4 h-4" />
-            </a>
+            {product?.permalink ? (
+              <>
+                <a
+                  href={`${product.permalink}?add-to-cart=${product.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+                >
+                  <ShoppingCart className="w-5 h-5" /> Add to Cart
+                </a>
+                <a
+                  href={product.permalink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                >
+                  Buy Now <ExternalLink className="w-4 h-4" />
+                </a>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!local) return;
+                    const numeric = Number(String(local.priceText || '').replace(/[^0-9.]/g, ''));
+                    addItem({
+                      productId: -1,
+                      productName: local.name,
+                      productImage: local.images?.[0] || '/placeholder-product.jpg',
+                      variantId: null,
+                      variantLabel: '',
+                      price: Number.isFinite(numeric) ? numeric : 0,
+                      quantity,
+                    });
+                    toast.success('Added to cart');
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+                >
+                  <ShoppingCart className="w-5 h-5" /> Add to Cart
+                </button>
+                <Link
+                  to="/cart"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                >
+                  View Cart <ExternalLink className="w-4 h-4" />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* SKU */}
-          {product.sku && <p className="text-sm text-neutral-400 mb-2">SKU: {product.sku}</p>}
+          {product?.sku && <p className="text-sm text-neutral-400 mb-2">SKU: {product.sku}</p>}
 
           {/* Inquiry buttons */}
           <div className="flex gap-3">
@@ -127,10 +170,22 @@ export default function ProductDetail() {
       </div>
 
       {/* Description */}
-      {product.description && (
+      {product?.description ? (
         <div className="mb-16">
           <h2 className="text-xl font-bold mb-4">Product Description</h2>
           <div className="prose max-w-none text-neutral-600" dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
+        </div>
+      ) : local?.descriptionHtml ? (
+        <div className="mb-16">
+          <h2 className="text-xl font-bold mb-4">Product Description</h2>
+          <div className="prose max-w-none text-neutral-600" dangerouslySetInnerHTML={{ __html: sanitizeHtml(local.descriptionHtml) }} />
+        </div>
+      ) : (
+        <div className="mb-16">
+          <h2 className="text-xl font-bold mb-4">Product Description</h2>
+          <div className="text-sm text-neutral-600">
+            <p>This product page is available with a static preview while detailed WooCommerce content is loading or unavailable.</p>
+          </div>
         </div>
       )}
     </div>
