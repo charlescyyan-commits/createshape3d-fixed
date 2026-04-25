@@ -41,6 +41,8 @@ export default function ProductDetail() {
   const shortDesc =
     local?.shortDescription ||
     `This is a product detail page for “${effectiveName}”. Detailed specifications may be added soon.`;
+  const specs = local?.specs || {};
+  const hasSpecs = Object.keys(specs).length > 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -81,6 +83,22 @@ export default function ProductDetail() {
           )}
 
           <div className="text-sm text-neutral-600 mb-6">{shortDesc}</div>
+
+          {hasSpecs && (
+            <div className="border border-neutral-200 rounded-xl overflow-hidden mb-6">
+              <div className="bg-neutral-50 px-4 py-3">
+                <h2 className="text-sm font-semibold text-neutral-900">Specifications</h2>
+              </div>
+              <div className="divide-y divide-neutral-200">
+                {Object.entries(specs).map(([key, value]) => (
+                  <div key={key} className="flex items-start justify-between gap-6 px-4 py-3">
+                    <span className="text-xs font-medium text-neutral-500">{specLabels[key] || key}</span>
+                    <span className="text-xs text-neutral-800 text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quantity */}
           <div className="flex items-center gap-4 mb-6">

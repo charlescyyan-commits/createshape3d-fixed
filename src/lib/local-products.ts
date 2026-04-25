@@ -6,6 +6,7 @@ export type LocalProduct = {
   categoryLabel?: string;
   shortDescription?: string;
   descriptionHtml?: string;
+  specs?: Record<string, string>;
 };
 
 const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
@@ -25,6 +26,19 @@ const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
     images: ['/products/printer-main.jpg'],
     categoryLabel: 'Industrial 3D Printer',
     shortDescription: 'Compact high-detail LCD printer for prototyping and production.',
+    specs: {
+      xy_resolution: '0.03 mm',
+      build_volume: '192 × 120 × 200 mm',
+      light_source: 'COB vertical light source (405nm)',
+      print_speed: 'Up to 220 mm/h',
+      layer_height: '0.01–0.20 mm',
+      z_axis: 'Dual linear rails',
+      screen: '4K monochrome LCD',
+      machine_size: 'Approx. 280 × 280 × 460 mm',
+      net_weight: 'Approx. 10 kg',
+    },
+    descriptionHtml:
+      '<p>The CS3D ProLite M4K is built for consistent, high-detail resin printing. Designed for fast workflows and dependable accuracy, it’s a solid choice for prototyping and small-batch production.</p><ul><li>High-detail output with stable Z motion</li><li>Optimized for speed and surface quality</li><li>Compatible with common 405nm resins</li></ul>',
   },
   'industrial-nova-x1': {
     slug: 'industrial-nova-x1',
