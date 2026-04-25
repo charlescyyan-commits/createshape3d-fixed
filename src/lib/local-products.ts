@@ -141,3 +141,7 @@ export function getLocalProductBySlug(slug: string | undefined | null) {
   return LOCAL_PRODUCTS[slug] ?? null;
 }
 
+export function getAllLocalProductSlugs() {
+  return Object.keys(LOCAL_PRODUCTS);
+}
+
