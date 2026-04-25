@@ -1,4 +1,4 @@
-const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape.com";
+const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape3d.com";
 
 async function wpFetch(endpoint: string, options?: RequestInit) {
   const url = `${WP_URL}/wp-json${endpoint}`;

@@ -36,7 +36,7 @@ export default function HeroCarousel() {
 
   useEffect(() => {
     // Try to fetch from WordPress ACF option "home_banners"
-    const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape.com";
+    const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape3d.com";
     fetch(`${WP_URL}/wp-json/acf/v3/options/home_banners`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
