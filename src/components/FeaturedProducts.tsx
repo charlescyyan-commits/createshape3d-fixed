@@ -1,33 +1,31 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { ShoppingCart, Eye, Heart } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 import { toast } from 'sonner';
-import { trpc } from '@/providers/trpc';
-import { useCart } from '@/contexts/CartContext';
 
 const tabs = ['Popular products', 'Most-viewed products', 'Top selling'];
+
+const currentProducts = [
+  {
+    id: 1, name: 'CS3D ProLite M4K', slug: 'prolite-m4k', mainImage: '/products/printer-main.jpg', basePrice: '299.99', compareAtPrice: '399.99', badge: 'POPULAR', category: { name: '3D Printer' }, isFeatured: true,
+  },
+  {
+    id: 2, name: 'Dental Stellar D100', slug: 'dental-stellar-d100', mainImage: '/products/dental-printer.jpg', basePrice: '1299.99', compareAtPrice: '1599.99', badge: 'NEW', category: { name: 'Dental Printer' }, isFeatured: true,
+  },
+  {
+    id: 3, name: 'Casting Resin Grey 12KG', slug: 'casting-resin-grey-12kg', mainImage: '/products/casting-resin.jpg', basePrice: '129.99', compareAtPrice: '264.00', badge: 'BESTSELLER', category: { name: 'Resin' }, isFeatured: true,
+  },
+  {
+    id: 4, name: 'Mono LCD Screen 6.6" 4K', slug: 'mono-lcd-screen-4k', mainImage: '/products/lcd-screen.jpg', basePrice: '89.99', compareAtPrice: '129.99', badge: '', category: { name: 'Accessories' }, isFeatured: true,
+  },
+  {
+    id: 5, name: 'Standard Resin 1KG', slug: 'standard-resin-1kg', mainImage: '/products/resin-washable-1kg.jpg', basePrice: '25.99', compareAtPrice: '39.99', badge: '', category: { name: 'Resin' }, isFeatured: true,
+  },
+];
 
 export default function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState(0);
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
-  const { addItem } = useCart();
-  const { data: allProducts } = trpc.product.list.useQuery({});
-
-  // Filter featured products
-  const featured = allProducts?.filter(p => p.isFeatured) || [];
-  const popular = featured.slice(0, 5);
-  const mostViewed = [...featured].reverse().slice(0, 5);
-  const topSelling = featured.filter(p => p.badge === 'BESTSELLER').slice(0, 5).length > 0
-    ? featured.filter(p => p.badge === 'BESTSELLER').slice(0, 5)
-    : featured.slice(2, 7);
-
-  const currentProducts = activeTab === 0 ? popular : activeTab === 1 ? mostViewed : topSelling;
-
-  const handleQuickAdd = (product: any) => {
-    const price = parseFloat(String(product.basePrice || 0));
-    addItem({ productId: product.id, productName: product.name, productImage: product.mainImage || '', variantId: null, variantLabel: '', price, quantity: 1 });
-    toast.success(`${product.name} added to cart`);
-  };
 
   return (
     <section className="py-12">
@@ -60,7 +58,7 @@ export default function FeaturedProducts() {
               <div className="relative bg-neutral-50 rounded-xl overflow-hidden mb-3 aspect-square">
                 <Link to={`/product/${product.slug}`}>
                   <img
-                    src={product.mainImage || '/products/resin-washable-1kg.jpg'}
+                    src={product.mainImage}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -74,13 +72,6 @@ export default function FeaturedProducts() {
                 {/* Hover actions */}
                 {hoveredProduct === product.id && (
                   <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 justify-center bg-gradient-to-t from-black/30 to-transparent">
-                    <button
-                      onClick={() => handleQuickAdd(product)}
-                      className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-neutral-900 hover:text-white transition-colors"
-                      title="Add to cart"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                    </button>
                     <Link
                       to={`/product/${product.slug}`}
                       className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-neutral-900 hover:text-white transition-colors"
@@ -115,10 +106,6 @@ export default function FeaturedProducts() {
             </div>
           ))}
         </div>
-
-        {currentProducts.length === 0 && (
-          <div className="text-center py-12 text-neutral-400">No featured products yet</div>
-        )}
       </div>
     </section>
   );

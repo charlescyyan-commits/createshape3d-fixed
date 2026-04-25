@@ -1,19 +1,18 @@
-import { Outlet, Link, useLocation } from 'react-router';
-import { LayoutDashboard, Package, FolderOpen, MessageSquare, Settings, FileText, ArrowLeft, Image } from 'lucide-react';
+import { Link } from 'react-router';
+import { LayoutDashboard, Package, FolderOpen, MessageSquare, ArrowLeft, Globe, ExternalLink } from 'lucide-react';
 
 const nav = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/products', label: 'Products', icon: Package },
-  { path: '/admin/categories', label: 'Categories', icon: FolderOpen },
-  { path: '/admin/banners', label: 'Banners', icon: Image },
-  { path: '/admin/pages', label: 'CMS Pages', icon: FileText },
   { path: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
-  { path: '/admin/settings', label: 'Settings', icon: Settings },
+];
+
+const wpLinks = [
+  { url: 'https://createshape3d.com/wp-admin/edit.php?post_type=product', label: 'Manage Products', icon: Package },
+  { url: 'https://createshape3d.com/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product', label: 'Manage Categories', icon: FolderOpen },
+  { url: 'https://createshape3d.com/wp-admin/edit.php?post_type=page', label: 'Manage Pages', icon: Globe },
 ];
 
 export default function AdminLayout() {
-  const location = useLocation();
-
   return (
     <div className="min-h-screen flex bg-neutral-50">
       <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col flex-shrink-0">
@@ -26,14 +25,17 @@ export default function AdminLayout() {
           </div>
         </div>
         <nav className="flex-1 p-3 space-y-1">
-          {nav.map(item => {
-            const active = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
-            return (
-              <Link key={item.path} to={item.path} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${active ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}>
-                <item.icon className="w-4 h-4" />{item.label}
-              </Link>
-            );
-          })}
+          {nav.map(item => (
+            <Link key={item.path} to={item.path} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-neutral-600 hover:bg-neutral-100">
+              <item.icon className="w-4 h-4" />{item.label}
+            </Link>
+          ))}
+          <div className="pt-4 pb-2 px-3 text-xs font-medium text-neutral-400 uppercase tracking-wider">WordPress Backend</div>
+          {wpLinks.map(item => (
+            <a key={item.url} href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-neutral-600 hover:bg-neutral-100">
+              <item.icon className="w-4 h-4" />{item.label}<ExternalLink className="w-3 h-3 ml-auto" />
+            </a>
+          ))}
         </nav>
         <div className="p-3 border-t border-neutral-200">
           <Link to="/" className="flex items-center gap-2 px-3 py-2 text-sm text-neutral-500 hover:text-neutral-900 transition-colors">
