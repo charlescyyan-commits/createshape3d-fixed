@@ -2,13 +2,28 @@ export type LocalProduct = {
   slug: string;
   name: string;
   subtitle?: string;
+  heroDescription?: string;
   priceText?: string;
+  currencyCode?: string;
   images?: string[];
   categoryLabel?: string;
   shortDescription?: string;
   descriptionHtml?: string;
   specs?: Record<string, string>;
   highlights?: string[];
+  features?: Array<{
+    label: string;
+    title: string;
+    desc: string;
+    checks: string[];
+    image: string;
+    reverse?: boolean;
+    dark?: boolean;
+  }>;
+  printSpecs?: Array<[string, string]>;
+  hwSpecs?: Array<[string, string]>;
+  ctaTitle?: string;
+  ctaSubtitle?: string;
 };
 
 const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
@@ -24,8 +39,10 @@ const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
   'prolite-m4k': {
     slug: 'prolite-m4k',
     name: 'CS3D ProLite M4K',
-    subtitle: 'High-detail LCD resin 3D printer',
+    subtitle: '4K MONOCHROME LCD 3D PRINTER',
+    heroDescription: '0.03mm XY resolution | 405nm light source | Stable Z-axis for consistent layer accuracy',
     priceText: '$299.99',
+    currencyCode: 'USD',
     images: ['/products/printer-main.jpg'],
     categoryLabel: 'Industrial 3D Printer',
     shortDescription: 'Compact high-detail LCD printer for prototyping and production.',
@@ -47,6 +64,27 @@ const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
       machine_size: 'Approx. 280 × 280 × 460 mm',
       net_weight: 'Approx. 10 kg',
     },
+    printSpecs: [
+      ['Printing Technology', 'LCD Stereolithography (MSLA)'],
+      ['Light Source', '405nm COB Vertical Point Light Source'],
+      ['XY Resolution', '0.03mm'],
+      ['Layer Thickness', '0.01 – 0.20mm'],
+      ['Max Printing Speed', 'Up to 220mm/h'],
+      ['Build Volume', '192 × 120 × 200mm (L×W×H)'],
+      ['Screen', '4K Monochrome LCD'],
+      ['Light Source Lifespan', '20,000 hours (rated)'],
+    ],
+    hwSpecs: [
+      ['Machine Dimensions', 'Approx. 280 × 280 × 460mm'],
+      ['Net Weight', 'Approx. 10 kg'],
+      ['Connectivity', 'USB / Wi-Fi (optional)'],
+      ['Supported Formats', 'STL, OBJ'],
+      ['Slicer Software', 'CHITUBOX / Lychee Slicer'],
+      ['Operating Systems', 'Windows / macOS'],
+      ['Certifications', 'CE / FCC'],
+    ],
+    ctaTitle: 'Ready to Upgrade Your Workflow?',
+    ctaSubtitle: 'Get the ProLite M4K today and start producing high-detail parts with confidence.',
     descriptionHtml:
       '<p>The CS3D ProLite M4K is built for consistent, high-detail resin printing. Designed for fast workflows and dependable accuracy, it’s a solid choice for prototyping and small-batch production.</p><ul><li>High-detail output with stable Z motion</li><li>Optimized for speed and surface quality</li><li>Compatible with common 405nm resins</li></ul>',
   },
