@@ -1,12 +1,14 @@
 export type LocalProduct = {
   slug: string;
   name: string;
+  subtitle?: string;
   priceText?: string;
   images?: string[];
   categoryLabel?: string;
   shortDescription?: string;
   descriptionHtml?: string;
   specs?: Record<string, string>;
+  highlights?: string[];
 };
 
 const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
@@ -22,10 +24,18 @@ const LOCAL_PRODUCTS: Record<string, LocalProduct> = {
   'prolite-m4k': {
     slug: 'prolite-m4k',
     name: 'CS3D ProLite M4K',
+    subtitle: 'High-detail LCD resin 3D printer',
     priceText: '$299.99',
     images: ['/products/printer-main.jpg'],
     categoryLabel: 'Industrial 3D Printer',
     shortDescription: 'Compact high-detail LCD printer for prototyping and production.',
+    highlights: [
+      '4K monochrome LCD for sharp detail',
+      'Stable Z motion for consistent layer accuracy',
+      'Optimized 405nm light source for common resins',
+      'Designed for fast workflows and easy maintenance',
+      'Reliable choice for prototyping and small-batch production',
+    ],
     specs: {
       xy_resolution: '0.03 mm',
       build_volume: '192 × 120 × 200 mm',
