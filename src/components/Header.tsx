@@ -76,6 +76,7 @@ const menuItems: MenuItem[] = [
     ],
   },
   { label: 'Contact Us', href: '/inquiry' },
+  { label: 'Cart (0)', href: '/cart' },
   { label: 'Blog', href: '/blog' },
 ];
 

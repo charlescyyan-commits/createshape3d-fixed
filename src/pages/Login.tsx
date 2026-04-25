@@ -112,10 +112,6 @@ export default function Login() {
         </button>
       </form>
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-neutral-200" /></div>
-        <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-neutral-400">or continue with</span></div>
-      </div>
 
       <button onClick={handleKimiLogin} disabled={isLoading} className="w-full py-3 border border-neutral-200 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
       </button>
