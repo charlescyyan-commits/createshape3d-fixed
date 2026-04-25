@@ -118,7 +118,7 @@ export default function Login() {
       </div>
 
       <button onClick={handleKimiLogin} disabled={isLoading} className="w-full py-3 border border-neutral-200 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-        Sign in with Kimi
+    
       </button>
 
       <p className="text-sm text-center mt-6 text-neutral-500">
