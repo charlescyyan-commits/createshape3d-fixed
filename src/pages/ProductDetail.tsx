@@ -239,7 +239,12 @@ export default function ProductDetail() {
                     aria-label={`View image ${i + 1}`}
                     type="button"
                   >
-                    <img src={img || '/placeholder-product.jpg'} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={img || '/placeholder-product.jpg'}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.currentTarget.src = '/placeholder-product.jpg'; }}
+                    />
                   </button>
                 ))}
               </div>
@@ -249,6 +254,7 @@ export default function ProductDetail() {
                   src={product.images[selectedImage] || '/placeholder-product.jpg'}
                   alt={product.effectiveName}
                   className="max-w-full max-h-[520px] object-contain transition-opacity duration-300"
+                  onError={(e) => { e.currentTarget.src = '/placeholder-product.jpg'; }}
                 />
               </div>
             </div>
@@ -326,6 +332,7 @@ export default function ProductDetail() {
             src="/products/industrial-printer.jpg"
             alt="Features Overview"
             className="w-full rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
+            onError={(e) => { e.currentTarget.src = '/placeholder-product.jpg'; }}
           />
         </div>
       </section>
@@ -360,6 +367,7 @@ export default function ProductDetail() {
                   src={feature.image}
                   alt={feature.title}
                   className={`w-full rounded-xl ${feature.dark ? 'shadow-[0_8px_32px_rgba(0,0,0,0.3)]' : 'shadow-[0_4px_20px_rgba(0,0,0,0.06)]'}`}
+                  onError={(e) => { e.currentTarget.src = '/placeholder-product.jpg'; }}
                 />
               </div>
             </div>
@@ -388,7 +396,12 @@ export default function ProductDetail() {
             ))}
           </div>
           <div className="rounded-2xl overflow-hidden shadow-lg">
-            <img src="/products/dental-printer.jpg" alt="Applications" className="w-full" />
+            <img
+              src="/products/dental-printer.jpg"
+              alt="Applications"
+              className="w-full"
+              onError={(e) => { e.currentTarget.src = '/placeholder-product.jpg'; }}
+            />
           </div>
         </div>
       </section>
@@ -438,6 +451,37 @@ export default function ProductDetail() {
           <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
             <p className="text-neutral-500 text-sm mb-2">Package details may vary by configuration.</p>
             <p className="text-neutral-400 text-xs">Need exact packing list? Contact sales for the latest BOM and options.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Product Details ===== */}
+      <section className="py-12 lg:py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 lg:px-6">
+          <div className="text-center mb-8">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-indigo-600 mb-2">Details</p>
+            <h2 className="text-2xl lg:text-3xl font-extrabold text-neutral-900">Product Details</h2>
+            <p className="text-neutral-600 mt-2 max-w-2xl mx-auto">
+              Detailed content is provided from local product data while the storefront integration is pending.
+            </p>
+          </div>
+
+          <div className="bg-white border border-neutral-200 rounded-2xl p-6 lg:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+            {local?.descriptionHtml ? (
+              <div
+                className="prose max-w-none text-neutral-700"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(local.descriptionHtml) }}
+              />
+            ) : (
+              <div className="text-neutral-700 leading-relaxed">
+                <p className="mb-3">
+                  {product.heroDescription}
+                </p>
+                <p className="text-neutral-600">
+                  This page uses local fallback data for now. If you need more technical information, please contact sales and we’ll provide the latest specification sheet.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
