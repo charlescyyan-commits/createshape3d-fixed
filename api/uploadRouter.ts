@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, adminQuery } from "./middleware";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 
@@ -26,7 +26,7 @@ function isR2Configured() {
 }
 
 export const uploadRouter = createRouter({
-  upload: publicQuery
+  upload: adminQuery
     .input(z.object({
       filename: z.string(),
       data: z.string(), // base64

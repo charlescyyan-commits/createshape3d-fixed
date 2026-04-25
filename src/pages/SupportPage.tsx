@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Search, ChevronDown, Mail, MessageCircle, Truck, Package, RotateCcw, CreditCard, HelpCircle } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { buildCanonical } from '@/lib/seo';
 
 const faqs = [
   {
@@ -61,6 +63,14 @@ export default function SupportPage() {
 
   return (
     <div>
+      <Helmet>
+        <title>Support | CreateShape3D</title>
+        <meta
+          name="description"
+          content="Get help with ordering, shipping, returns, warranty, and product compatibility. Browse FAQs or contact CreateShape3D support."
+        />
+        <link rel="canonical" href={buildCanonical('/support')} />
+      </Helmet>
       {/* Hero */}
       <section className="bg-[#0a1628] py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 lg:px-6 text-center">

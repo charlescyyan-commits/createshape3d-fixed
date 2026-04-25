@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { ShoppingCart, Check, Star, Shield, Zap, Monitor, RotateCcw, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCart } from '@/contexts/CartContext';
 
 const productImages = [
   '/products/lcd-screen.jpg',
@@ -78,7 +79,16 @@ export default function MonoLCDProduct() {
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
-    window.location.href = '/products';
+    addItem({
+      productId: 301,
+      productName: 'Mono LCD Screen 6.6" 4K Replacement',
+      productImage: productImages[0],
+      variantId: null,
+      variantLabel: '',
+      price: 89.99,
+      quantity: 1,
+    });
+    toast.success('Mono LCD Screen added to cart');
   };
 
   return (

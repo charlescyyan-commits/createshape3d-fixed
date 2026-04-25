@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { ShoppingCart, Heart, Check, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCart } from '@/contexts/CartContext';
 
 const productImages = [
   '/products/casting-resin.jpg',
@@ -57,7 +58,17 @@ export default function ResinProduct() {
   const origMap: Record<number, string> = { 0: '$39.99', 1: '$69.99', 2: '$149.99', 3: '$264.00' };
 
   const handleAddToCart = () => {
-    window.location.href = '/products';
+    const price = parseFloat(priceMap[selectedSize].replace('$', ''));
+    addItem({
+      productId: 200,
+      productName: `Casting Resin ${colors[selectedColor].name} ${sizes[selectedSize]}`,
+      productImage: productImages[0],
+      variantId: null,
+      variantLabel: `${colors[selectedColor].name} / ${sizes[selectedSize]}`,
+      price,
+      quantity: qty,
+    });
+    toast.success(`Casting Resin added to cart`);
   };
 
   return (

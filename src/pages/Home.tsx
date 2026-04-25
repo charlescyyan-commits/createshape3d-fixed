@@ -3,6 +3,8 @@ import { ArrowRight, Globe, Award, Users, Zap } from 'lucide-react';
 import HeroCarousel from '@/components/HeroCarousel';
 import ExploreProducts from '@/components/ExploreProducts';
 import PrintGallery from '@/components/PrintGallery';
+import { Helmet } from 'react-helmet-async';
+import { buildCanonical } from '@/lib/seo';
 
 const stats = [
   { value: '10+', label: 'Years of Expertise', icon: Award },
@@ -21,6 +23,14 @@ const categories = [
 export default function Home() {
   return (
     <div>
+      <Helmet>
+        <title>CreateShape3D | Professional 3D Printers & Resins</title>
+        <meta
+          name="description"
+          content="CreateShape3D designs and manufactures professional 3D printers, dental printing solutions, and premium photopolymer resins for precise, reliable results."
+        />
+        <link rel="canonical" href={buildCanonical('/')} />
+      </Helmet>
       {/* 1. Hero - Fullscreen dark blue */}
       <HeroCarousel />
 

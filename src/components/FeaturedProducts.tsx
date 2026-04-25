@@ -1,31 +1,38 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Eye, Heart } from 'lucide-react';
+import { ShoppingCart, Eye, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatWooPrice, type WooProduct } from '@/lib/wp-client';
+import { useWooProductsQuery } from '@/hooks/useWPQueries';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 const tabs = ['Popular products', 'Most-viewed products', 'Top selling'];
-
-const currentProducts = [
-  {
-    id: 1, name: 'CS3D ProLite M4K', slug: 'prolite-m4k', mainImage: '/products/printer-main.jpg', basePrice: '299.99', compareAtPrice: '399.99', badge: 'POPULAR', category: { name: '3D Printer' }, isFeatured: true,
-  },
-  {
-    id: 2, name: 'Dental Stellar D100', slug: 'dental-stellar-d100', mainImage: '/products/dental-printer.jpg', basePrice: '1299.99', compareAtPrice: '1599.99', badge: 'NEW', category: { name: 'Dental Printer' }, isFeatured: true,
-  },
-  {
-    id: 3, name: 'Casting Resin Grey 12KG', slug: 'casting-resin-grey-12kg', mainImage: '/products/casting-resin.jpg', basePrice: '129.99', compareAtPrice: '264.00', badge: 'BESTSELLER', category: { name: 'Resin' }, isFeatured: true,
-  },
-  {
-    id: 4, name: 'Mono LCD Screen 6.6" 4K', slug: 'mono-lcd-screen-4k', mainImage: '/products/lcd-screen.jpg', basePrice: '89.99', compareAtPrice: '129.99', badge: '', category: { name: 'Accessories' }, isFeatured: true,
-  },
-  {
-    id: 5, name: 'Standard Resin 1KG', slug: 'standard-resin-1kg', mainImage: '/products/resin-washable-1kg.jpg', basePrice: '25.99', compareAtPrice: '39.99', badge: '', category: { name: 'Resin' }, isFeatured: true,
-  },
-];
 
 export default function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState(0);
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
+  const { data } = useWooProductsQuery({ per_page: 20 });
+  const allProducts: WooProduct[] = Array.isArray(data) ? data : [];
+
+  const popular = allProducts.slice(0, 5);
+  const mostViewed = [...allProducts].reverse().slice(0, 5);
+  const topSelling = allProducts.slice(5, 10);
+
+  const renderPrice = (product: WooProduct) => {
+    const p = formatWooPrice(product);
+    return (
+      <span
+        className="text-sm font-bold"
+        {...(p.html ? { dangerouslySetInnerHTML: { __html: sanitizeHtml(p.html) } } : { children: p.text })}
+      />
+    );
+  };
+
+  const currentProducts = activeTab === 0 ? popular : activeTab === 1 ? mostViewed : topSelling;
+
+  const handleQuickAdd = (product: WooProduct) => {
+    window.open(`${product.permalink}?add-to-cart=${product.id}`, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <section className="py-12">
@@ -58,20 +65,25 @@ export default function FeaturedProducts() {
               <div className="relative bg-neutral-50 rounded-xl overflow-hidden mb-3 aspect-square">
                 <Link to={`/product/${product.slug}`}>
                   <img
-                    src={product.mainImage}
+                    src={product.images?.[0]?.src || '/products/resin-washable-1kg.jpg'}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
 
                 {/* Badge */}
-                {product.badge && (
-                  <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">{product.badge}</span>
-                )}
+                {/* (No badge from Woo Store API) */}
 
                 {/* Hover actions */}
                 {hoveredProduct === product.id && (
                   <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 justify-center bg-gradient-to-t from-black/30 to-transparent">
+                    <button
+                      onClick={() => handleQuickAdd(product)}
+                      className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-neutral-900 hover:text-white transition-colors"
+                      title="Add to cart"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                    </button>
                     <Link
                       to={`/product/${product.slug}`}
                       className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-neutral-900 hover:text-white transition-colors"
@@ -92,20 +104,21 @@ export default function FeaturedProducts() {
 
               <div className="px-1">
                 {/* Category tag */}
-                <span className="text-[11px] text-neutral-400 uppercase tracking-wider">{product.category?.name || 'Product'}</span>
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider">{product.categories?.[0]?.name || 'Product'}</span>
                 <Link to={`/product/${product.slug}`}>
                   <h3 className="text-sm font-semibold mt-0.5 mb-1 group-hover:text-neutral-600 transition-colors line-clamp-1">{product.name}</h3>
                 </Link>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold">${product.basePrice}</span>
-                  {product.compareAtPrice && (
-                    <span className="text-xs text-neutral-400 line-through">${product.compareAtPrice}</span>
-                  )}
+                  {renderPrice(product)}
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {currentProducts.length === 0 && (
+          <div className="text-center py-12 text-neutral-400">No featured products yet</div>
+        )}
       </div>
     </section>
   );

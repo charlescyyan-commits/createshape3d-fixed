@@ -1,56 +1,54 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   getWooProducts,
-  getWooProductBySlug,
   getWooProductCategories,
-  getWPPageBySlug,
+  getWooProductBySlug,
   getWPPosts,
+  getWPPageBySlug,
+  getWPPageBySlugWithAcf,
 } from '@/lib/wp-client';
 
-export const wooKeys = {
-  products: (params?: any) => ['products', params] as const,
-  product: (slug: string) => ['product', slug] as const,
-  categories: () => ['categories'] as const,
-};
-
-export const wpKeys = {
-  page: (slug: string) => ['page', slug] as const,
-  posts: (params?: any) => ['posts', params] as const,
-};
-
-export function useProducts(params?: Parameters<typeof getWooProducts>[0]) {
+export function useWooProductsQuery(params?: { per_page?: number; category?: string; search?: string; page?: number }) {
   return useQuery({
-    queryKey: wooKeys.products(params),
+    queryKey: ['woo', 'products', params ?? {}],
     queryFn: () => getWooProducts(params),
   });
 }
 
-export function useProduct(slug: string) {
+export function useWooProductCategoriesQuery() {
   return useQuery({
-    queryKey: wooKeys.product(slug),
-    queryFn: () => getWooProductBySlug(slug),
-    enabled: !!slug,
+    queryKey: ['woo', 'productCategories'],
+    queryFn: () => getWooProductCategories(),
   });
 }
 
-export function useCategories() {
+export function useWooProductBySlugQuery(slug: string | undefined) {
   return useQuery({
-    queryKey: wooKeys.categories(),
-    queryFn: getWooProductCategories,
+    queryKey: ['woo', 'productBySlug', slug],
+    enabled: Boolean(slug),
+    queryFn: () => getWooProductBySlug(slug as string),
   });
 }
 
-export function usePage(slug: string) {
+export function useWPPostsQuery(params?: { per_page?: number; category?: string; page?: number }) {
   return useQuery({
-    queryKey: wpKeys.page(slug),
-    queryFn: () => getWPPageBySlug(slug),
-    enabled: !!slug,
-  });
-}
-
-export function usePosts(params?: Parameters<typeof getWPPosts>[0]) {
-  return useQuery({
-    queryKey: wpKeys.posts(params),
+    queryKey: ['wp', 'posts', params ?? {}],
     queryFn: () => getWPPosts(params),
   });
 }
+
+export function useWPPageBySlugQuery(slug: string | undefined) {
+  return useQuery({
+    queryKey: ['wp', 'pageBySlug', slug],
+    enabled: Boolean(slug),
+    queryFn: () => getWPPageBySlug(slug as string),
+  });
+}
+
+export function useWPPageBySlugWithAcfQuery(slug: string) {
+  return useQuery({
+    queryKey: ['wp', 'pageBySlugWithAcf', slug],
+    queryFn: () => getWPPageBySlugWithAcf(slug),
+  });
+}
+

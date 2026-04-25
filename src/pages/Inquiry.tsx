@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { Send, CheckCircle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/providers/trpc';
+import { Helmet } from 'react-helmet-async';
+import { buildCanonical } from '@/lib/seo';
 
 export default function Inquiry() {
   const [submitted, setSubmitted] = useState(false);
@@ -21,6 +23,14 @@ export default function Inquiry() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <Helmet>
+        <title>Contact Us | CreateShape3D</title>
+        <meta
+          name="description"
+          content="Contact CreateShape3D for OEM inquiries, bulk orders, private labeling, and technical questions. Our team will respond within 1 business day."
+        />
+        <link rel="canonical" href={buildCanonical('/inquiry')} />
+      </Helmet>
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 mb-6">
         <ArrowLeft className="w-4 h-4" /> Back to Home
       </Link>

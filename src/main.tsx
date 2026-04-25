@@ -3,16 +3,22 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import { Toaster } from 'sonner';
 import { TRPCProvider } from '@/providers/trpc';
+import { QueryProvider } from '@/providers/query';
+import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <TRPCProvider>
-        <App />
-        <Toaster position="top-center" />
-      </TRPCProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <QueryProvider>
+          <TRPCProvider>
+            <App />
+            <Toaster position="top-center" />
+          </TRPCProvider>
+        </QueryProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </StrictMode>,
 );

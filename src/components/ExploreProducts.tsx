@@ -1,12 +1,16 @@
 import { Link } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { useProducts } from '@/hooks/useWPQueries';
-import { formatWooPrice } from '@/lib/wp-client';
+import { formatWooPrice, type WooProduct } from '@/lib/wp-client';
+import { useWooProductsQuery } from '@/hooks/useWPQueries';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 export default function ExploreProducts() {
-  const { data: products } = useProducts({ per_page: 8 });
+  const { data, isLoading } = useWooProductsQuery({ per_page: 8 });
+  const products: WooProduct[] = Array.isArray(data) ? data : [];
 
-  if (!products?.length) return null;
+  // keep existing behavior: if no products, show nothing (also while loading)
+  if (isLoading) return null;
+  if (!products.length) return null;
 
   return (
     <section className="py-16 lg:py-24 bg-white">
@@ -16,10 +20,12 @@ export default function ExploreProducts() {
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600 mb-3">Products</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0a1628]">Explore Our Products</h2>
           </div>
-          <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">View All <ArrowRight className="w-4 h-4" /></Link>
+          <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+            View All <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.map((product: any) => (
+          {products.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -31,9 +37,9 @@ export default function ExploreProducts() {
   );
 }
 
-function ProductCard({ product }: { product: any }) {
+function ProductCard({ product }: { product: WooProduct }) {
   const image = product.images?.[0]?.src || '/placeholder-product.jpg';
-  const priceInfo = formatWooPrice(product);
+  const price = formatWooPrice(product);
 
   return (
     <Link to={`/product/${product.slug}`} className="group bg-white border border-neutral-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
@@ -43,7 +49,10 @@ function ProductCard({ product }: { product: any }) {
       <div className="p-4">
         <p className="text-xs text-neutral-400 mb-1">{product.categories?.[0]?.name || 'Product'}</p>
         <h3 className="font-medium text-sm mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">{product.name}</h3>
-        <p className="font-bold">{priceInfo.currencySymbol}{priceInfo.price}</p>
+        <p
+          className="font-bold"
+          {...(price.html ? { dangerouslySetInnerHTML: { __html: sanitizeHtml(price.html) } } : { children: price.text })}
+        />
       </div>
     </Link>
   );

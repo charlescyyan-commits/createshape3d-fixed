@@ -4,6 +4,8 @@ import { LogIn, ArrowLeft, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trpc } from '@/providers/trpc';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
+import { buildCanonical } from '@/lib/seo';
 
 export default function Login() {
   const { user, isLoading } = useAuth();
@@ -46,6 +48,11 @@ export default function Login() {
   if (user) {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center">
+        <Helmet>
+          <title>Account | CreateShape3D</title>
+          <meta name="description" content="Manage your CreateShape3D account and access your profile." />
+          <link rel="canonical" href={buildCanonical('/login')} />
+        </Helmet>
         <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-xl font-bold">{user.name?.[0] || 'U'}</span>
         </div>
@@ -61,6 +68,14 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-12">
+      <Helmet>
+        <title>{mode === 'login' ? 'Sign In' : 'Create Account'} | CreateShape3D</title>
+        <meta
+          name="description"
+          content={mode === 'login' ? 'Sign in to access your CreateShape3D account.' : 'Create a CreateShape3D account to get started.'}
+        />
+        <link rel="canonical" href={buildCanonical('/login')} />
+      </Helmet>
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 mb-6"><ArrowLeft className="w-4 h-4" /> Back</Link>
       <h1 className="text-2xl font-bold mb-2">{mode === 'login' ? 'Sign In' : 'Create Account'}</h1>
       <p className="text-neutral-500 mb-8">{mode === 'login' ? 'Sign in to access your account, orders, and saved items.' : 'Register a new account to get started.'}</p>

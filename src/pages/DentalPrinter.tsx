@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { ShoppingCart, MessageCircle, ChevronLeft, ChevronRight, Star, Shield, Truck, RotateCcw, Award, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCart } from '@/contexts/CartContext';
 
 const productImages = [
   '/products/dental-printer.jpg',
@@ -28,12 +29,22 @@ const awardBadges = [
 
 export default function DentalPrinter() {
   const [selectedImage, setSelectedImage] = useState(0);
+  const { addItem } = useCart();
 
   const nextImage = () => setSelectedImage((i) => (i + 1) % productImages.length);
   const prevImage = () => setSelectedImage((i) => (i - 1 + productImages.length) % productImages.length);
 
   const handleAddToCart = () => {
-    window.location.href = '/products';
+    addItem({
+      productId: 101,
+      productName: 'Dental Stellar D100',
+      productImage: productImages[0],
+      variantId: null,
+      variantLabel: '',
+      price: 1299.99,
+      quantity: 1,
+    });
+    toast.success('Dental Stellar D100 added to cart');
   };
 
   return (
