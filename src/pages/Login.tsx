@@ -25,15 +25,6 @@ export default function Login() {
     onError: (e) => { toast.error(e.message); setSubmitting(false); },
   });
 
-  const handleKimiLogin = () => {
-    const appId = import.meta.env.VITE_APP_ID || '';
-    const authUrl = import.meta.env.VITE_KIMI_AUTH_URL || '';
-    const redirectUri = `${window.location.origin}/api/oauth/callback`;
-    const state = btoa(redirectUri);
-    const url = `${authUrl}?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=basic&state=${state}`;
-    window.location.href = url;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -111,10 +102,6 @@ export default function Login() {
           <LogIn className="w-4 h-4" /> {submitting ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Create Account'}
         </button>
       </form>
-
-
-      <button onClick={handleKimiLogin} disabled={isLoading} className="w-full py-3 border border-neutral-200 text-sm font-medium rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-      </button>
 
       <p className="text-sm text-center mt-6 text-neutral-500">
         {mode === 'login' ? (

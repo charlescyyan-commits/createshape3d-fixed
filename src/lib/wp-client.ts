@@ -25,6 +25,17 @@ export async function getWooProducts(params?: { per_page?: number; category?: st
 }
 
 export async function getWooProductBySlug(slug: string) {
+  // Prefer WooCommerce Store API (public) by slug, then fallback to WP REST if needed.
+  try {
+    const qs = new URLSearchParams();
+    qs.set("slug", slug);
+    qs.set("per_page", "1");
+    const rows = await wpFetch(`/wc/store/products?${qs.toString()}`);
+    if (Array.isArray(rows) && rows.length > 0) return rows[0];
+  } catch {
+    // ignore and fallback
+  }
+
   const qs = new URLSearchParams();
   qs.set("slug", slug);
   qs.set("_fields", "id,slug");

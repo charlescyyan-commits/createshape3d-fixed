@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router';
-import { Search, Menu, X, User, ChevronDown } from 'lucide-react';
+import { Search, Menu, X, User, ChevronDown, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 interface MenuProduct {
   name: string;
@@ -76,7 +77,6 @@ const menuItems: MenuItem[] = [
     ],
   },
   { label: 'Contact Us', href: '/inquiry' },
-  { label: 'Cart (0)', href: '/cart' },
   { label: 'Blog', href: '/blog' },
 ];
 
@@ -89,6 +89,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const getSetting = (_key: string) => undefined;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { totalCount } = useCart();
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 20);
@@ -290,6 +291,14 @@ export default function Header() {
             <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
               <Search className="w-[18px] h-[18px] text-neutral-600" />
             </button>
+            <Link to="/cart" className="p-2 hover:bg-neutral-100 rounded-full transition-colors relative" aria-label="Cart">
+              <ShoppingCart className="w-[18px] h-[18px] text-neutral-600" />
+              {totalCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-blue-600 text-white text-[10px] leading-4 text-center font-medium">
+                  {totalCount > 99 ? '99+' : totalCount}
+                </span>
+              )}
+            </Link>
             <Link to="/login" className="p-2 hover:bg-neutral-100 rounded-full transition-colors hidden sm:flex">
               <User className="w-[18px] h-[18px] text-neutral-600" />
             </Link>
