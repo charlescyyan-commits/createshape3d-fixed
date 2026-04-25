@@ -1,10 +1,9 @@
 import { Routes, Route } from 'react-router'
-import { CartProvider } from './contexts/CartContext'
+import { HelmetProvider } from 'react-helmet-async'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import ProductList from './pages/ProductList'
 import ProductDetail from './pages/ProductDetail'
-import Cart from './pages/Cart'
 import Inquiry from './pages/Inquiry'
 import Login from './pages/Login'
 import AdminLayout from './pages/admin/AdminLayout'
@@ -25,7 +24,7 @@ import AdminBanners from './pages/admin/AdminBanners'
 
 export default function App() {
   return (
-    <CartProvider>
+    <HelmetProvider>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
@@ -35,7 +34,6 @@ export default function App() {
           <Route path="/product/casting-resin" element={<ResinProduct />} />
           <Route path="/product/mono-lcd-screen" element={<MonoLCDProduct />} />
           <Route path="/dental-printer" element={<DentalPrinter />} />
-          <Route path="/cart" element={<Cart />} />
           <Route path="/inquiry" element={<Inquiry />} />
           <Route path="/login" element={<Login />} />
           <Route path="/support" element={<SupportPage />} />
@@ -52,6 +50,6 @@ export default function App() {
           <Route path="pages" element={<AdminPages />} />
         </Route>
       </Routes>
-    </CartProvider>
+    </HelmetProvider>
   )
 }

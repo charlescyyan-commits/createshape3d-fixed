@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router';
-import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
+import { Search, Menu, X, User, ChevronDown } from 'lucide-react';
 import { trpc } from '@/providers/trpc';
 
 interface MenuProduct {
@@ -88,7 +87,6 @@ export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const { totalCount } = useCart();
   const { data: settings } = trpc.setting.list.useQuery();
   const getSetting = (key: string) => settings?.find(s => s.key === key)?.value;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -295,12 +293,6 @@ export default function Header() {
             </button>
             <Link to="/login" className="p-2 hover:bg-neutral-100 rounded-full transition-colors hidden sm:flex">
               <User className="w-[18px] h-[18px] text-neutral-600" />
-            </Link>
-            <Link to="/cart" className="p-2 hover:bg-neutral-100 rounded-full transition-colors relative">
-              <ShoppingCart className="w-[18px] h-[18px] text-neutral-600" />
-              {totalCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{totalCount}</span>
-              )}
             </Link>
             <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden p-2 hover:bg-neutral-100 rounded-full transition-colors">
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

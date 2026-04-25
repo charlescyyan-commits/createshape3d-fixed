@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { getWooProducts, type WooProduct } from '@/lib/wp-client';
+import { getWooProducts, formatWooPrice, type WooProduct } from '@/lib/wp-client';
 
 export default function ExploreProducts() {
   const [products, setProducts] = useState<WooProduct[]>([]);
@@ -39,7 +39,7 @@ export default function ExploreProducts() {
 
 function ProductCard({ product }: { product: WooProduct }) {
   const image = product.images?.[0]?.src || '/placeholder-product.jpg';
-  const price = product.prices?.price || product.prices?.regular_price || '0';
+  const priceInfo = formatWooPrice(product);
 
   return (
     <Link to={`/product/${product.slug}`} className="group bg-white border border-neutral-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
@@ -49,7 +49,7 @@ function ProductCard({ product }: { product: WooProduct }) {
       <div className="p-4">
         <p className="text-xs text-neutral-400 mb-1">{product.categories?.[0]?.name || 'Product'}</p>
         <h3 className="font-medium text-sm mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">{product.name}</h3>
-        <p className="font-bold">${price}</p>
+        <p className="font-bold">{priceInfo.currencySymbol}{priceInfo.price}</p>
       </div>
     </Link>
   );

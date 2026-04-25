@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getWPPageBySlug } from '@/lib/wp-client';
 
 const defaultSlides = [
   {
@@ -9,7 +10,7 @@ const defaultSlides = [
     description: '0.03mm XY resolution | 16K LCD technology | 220mm/h print speed',
     image: '/slides/hero-1.jpg',
     buttonText: 'Shop Now',
-    buttonLink: '/product/prolite-m4k',
+    buttonLink: '/products',
   },
   {
     title: 'Premium Dental Resin',
@@ -17,7 +18,7 @@ const defaultSlides = [
     description: 'Class IIa biocompatible | High precision | Smooth surface finish',
     image: '/slides/hero-2.jpg',
     buttonText: 'Shop Resins',
-    buttonLink: '/category/resin',
+    buttonLink: '/products',
   },
   {
     title: 'Industrial Nova X1',
@@ -25,35 +26,38 @@ const defaultSlides = [
     description: '400×200mm build volume | 0.05mm precision | Industrial-grade reliability',
     image: '/slides/hero-3.jpg',
     buttonText: 'Learn More',
-    buttonLink: '/product/industrial-nova-x1',
+    buttonLink: '/products',
   },
 ];
 
+interface BannerSlide {
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
 export default function HeroCarousel() {
   const [current, setCurrent] = useState(0);
-  const [slides, setSlides] = useState(defaultSlides);
-  const [loading, setLoading] = useState(true);
+  const [slides, setSlides] = useState<BannerSlide[]>(defaultSlides);
 
   useEffect(() => {
-    // Try to fetch from WordPress ACF option "home_banners"
-    const WP_URL = import.meta.env.VITE_WP_URL || "https://createshape3d.com";
-    fetch(`${WP_URL}/wp-json/acf/v3/options/home_banners`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data?.home_banners?.length) {
-          const wpSlides = data.home_banners.map((b: any) => ({
-            title: b.banner_title || '',
-            subtitle: b.banner_subtitle || '',
-            description: b.banner_description || '',
-            image: b.banner_image?.url || b.banner_image || '/slides/hero-1.jpg',
-            buttonText: b.banner_button_text || 'Shop Now',
-            buttonLink: b.banner_button_link || '/products',
-          }));
-          setSlides(wpSlides);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Fetch from WordPress Page "home-banners" with ACF fields
+    getWPPageBySlug('home-banners').then(page => {
+      if (page?.acf?.banner_slides?.length) {
+        const wpSlides = page.acf.banner_slides.map((b: any) => ({
+          title: b.banner_title || '',
+          subtitle: b.banner_subtitle || '',
+          description: b.banner_description || '',
+          image: b.banner_image?.url || b.banner_image || '/slides/hero-1.jpg',
+          buttonText: b.banner_button_text || 'Shop Now',
+          buttonLink: b.banner_button_link || '/products',
+        }));
+        setSlides(wpSlides);
+      }
+    }).catch(() => {});
   }, []);
 
   const next = () => setCurrent(c => (c + 1) % slides.length);
@@ -63,8 +67,6 @@ export default function HeroCarousel() {
     const timer = setInterval(next, 6000);
     return () => clearInterval(timer);
   }, [slides.length]);
-
-  if (loading) return <div className="h-[60vh] min-h-[500px] bg-[#0a1628] animate-pulse" />;
 
   const slide = slides[current];
 
@@ -88,11 +90,9 @@ export default function HeroCarousel() {
         </div>
       </div>
 
-      {/* Arrows */}
       <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"><ChevronLeft className="w-6 h-6" /></button>
       <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"><ChevronRight className="w-6 h-6" /></button>
 
-      {/* Dots */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? 'bg-white w-8' : 'bg-white/40'}`} />
