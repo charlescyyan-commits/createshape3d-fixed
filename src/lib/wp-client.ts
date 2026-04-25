@@ -10,24 +10,25 @@ async function wpFetch(endpoint: string, options?: RequestInit) {
   return res.json();
 }
 
-// WooCommerce Store API
+// WooCommerce Store API (public, no auth needed)
 export async function getWooProducts(params?: { per_page?: number; category?: string; search?: string; page?: number }) {
   const qs = new URLSearchParams();
   if (params?.per_page) qs.set("per_page", String(params.per_page));
   if (params?.category) qs.set("category", params.category);
   if (params?.search) qs.set("search", params.search);
   if (params?.page) qs.set("page", String(params.page));
-  qs.set("_fields", "id,name,slug,price,prices,images,categories,short_description,description,sku,stock_status,permalink");
   return wpFetch(`/wc/store/products?${qs.toString()}`);
 }
 
+// WooCommerce Store API does not support slug filter, so we fetch by search and filter client-side
 export async function getWooProductBySlug(slug: string) {
-  const products = await wpFetch(`/wc/store/products?slug=${slug}&_fields=id,name,slug,price,prices,images,categories,short_description,description,sku,stock_status,permalink,attributes,variations`);
-  return Array.isArray(products) && products.length > 0 ? products[0] : null;
+  const products = await wpFetch(`/wc/store/products?per_page=100`);
+  if (!Array.isArray(products)) return null;
+  return products.find((p: any) => p.slug === slug) || null;
 }
 
 export async function getWooProductCategories() {
-  return wpFetch("/wc/store/products/categories?per_page=100&_fields=id,name,slug,parent,image");
+  return wpFetch("/wc/store/products/categories?per_page=100");
 }
 
 // WordPress Pages API
@@ -46,11 +47,12 @@ export async function getWPPosts(params?: { per_page?: number; category?: string
   if (params?.per_page) qs.set("per_page", String(params.per_page));
   if (params?.category) qs.set("categories", params.category);
   if (params?.page) qs.set("page", String(params.page));
-  qs.set("_fields", "id,title,slug,excerpt,date,featured_media,_links");
+  qs.set("_fields", "id,title,slug,excerpt,date,featured_media");
   return wpFetch(`/wp/v2/posts?${qs.toString()}`);
 }
 
-// ACF Options API (requires ACF to REST API plugin)
+// ACF - Native REST API (ACF Pro 5.11+ or ACF free with REST enabled)
+// For options pages, endpoint is: /wp-json/acf/v3/options/{option_name}
 export async function getACFOption(name: string) {
   try {
     return wpFetch(`/acf/v3/options/${name}`);
